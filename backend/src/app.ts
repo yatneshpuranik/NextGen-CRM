@@ -36,7 +36,7 @@ const limiter = rateLimit({
   legacyHeaders: false,
   message: 'Too many requests from this IP, please try again after 15 minutes'
 });
-app.use('/crm/v1', limiter);
+app.use('/', limiter);
 
 // Request body parsers
 app.use(express.json());
@@ -58,7 +58,7 @@ app.get("/", (req, res) => {
 });
 
 // Mount REST API Routers
-app.use('/crm/v1', v1Routes);
+app.use('/', v1Routes);
 
 // Global Error Handler Middleware
 app.use(globalErrorHandler);

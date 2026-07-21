@@ -40,6 +40,12 @@ import BackupRestorePage from './pages/BackupRestorePage';
 import NotificationsPage from './pages/NotificationsPage';
 import RoleGuard from './components/RoleGuard';
 
+// Import Warehouse & Email Log pages
+import WarehouseListPage from './pages/WarehouseListPage';
+import WarehouseFormPage from './pages/WarehouseFormPage';
+import WarehouseDetailsPage from './pages/WarehouseDetailsPage';
+import EmailLogsPage from './pages/EmailLogsPage';
+
 function App() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
@@ -101,6 +107,15 @@ function App() {
           <Route path="audit-logs" element={<RoleGuard allowedRoles={['ADMIN']}><AuditLogsPage /></RoleGuard>} />
           <Route path="backup-restore" element={<RoleGuard allowedRoles={['ADMIN']}><BackupRestorePage /></RoleGuard>} />
           <Route path="settings" element={<RoleGuard allowedRoles={['ADMIN']}><SettingsPage /></RoleGuard>} />
+
+          {/* Warehouse Module Routes */}
+          <Route path="warehouses" element={<WarehouseListPage />} />
+          <Route path="warehouses/new" element={<WarehouseFormPage />} />
+          <Route path="warehouses/:id" element={<WarehouseDetailsPage />} />
+          <Route path="warehouses/:id/edit" element={<WarehouseFormPage />} />
+
+          {/* Intelligent Email Logs Route */}
+          <Route path="email-logs" element={<RoleGuard allowedRoles={['ADMIN']}><EmailLogsPage /></RoleGuard>} />
         </Route>
 
         {/* Catch all and route to dashboard or login */}

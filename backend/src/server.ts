@@ -12,6 +12,32 @@ const startServer = async (): Promise<void> => {
     await prisma.$connect();
     logger.info('✅ Database Connected Successfully');
 
+    // Ensure Default Warehouse exists and associate legacy inventory records
+    let defaultWarehouse = await prisma.warehouse.findUnique({
+      where: { code: 'WH-DEFAULT' }
+    });
+    if (!defaultWarehouse) {
+      defaultWarehouse = await prisma.warehouse.create({
+        data: {
+          code: 'WH-DEFAULT',
+          name: 'Default Warehouse',
+          address: 'Main Headquarters Warehouse',
+          contactPerson: 'Operations Manager',
+          contactNumber: '0000000000',
+          status: 'ACTIVE'
+        }
+      });
+      logger.info('Created WH-DEFAULT warehouse record.');
+    }
+
+    const updatedInvs = await prisma.inventory.updateMany({
+      where: { warehouseId: null },
+      data: { warehouseId: defaultWarehouse.id }
+    });
+    if (updatedInvs.count > 0) {
+      logger.info(`Associated ${updatedInvs.count} legacy inventory records with WH-DEFAULT.`);
+    }
+
     server = app.listen(PORT, () => {
       logger.info(`🚀 Server running on http://localhost:${PORT}`);
       logger.info(`📚 Swagger Docs: http://localhost:${PORT}/crm/api`);

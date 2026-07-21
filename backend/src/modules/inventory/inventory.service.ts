@@ -22,7 +22,7 @@ export class InventoryService {
     const productsWithoutInventory = await prisma.product.findMany({
       where: {
         isDeleted: false,
-        inventory: null
+        inventories: { none: {} }
       },
       select: {
         id: true,
@@ -58,7 +58,7 @@ export class InventoryService {
       throw new NotFoundError('Product not found');
     }
 
-    let inventory = await prisma.inventory.findUnique({
+    let inventory = await prisma.inventory.findFirst({
       where: { productId }
     });
 
@@ -341,7 +341,7 @@ export class InventoryService {
    * Update Inventory Settings for a product.
    */
   public async updateSettings(productId: string, dto: UpdateInventorySettingsDTO): Promise<Inventory> {
-    const inventory = await prisma.inventory.findUnique({
+    const inventory = await prisma.inventory.findFirst({
       where: { productId }
     });
 
@@ -352,7 +352,7 @@ export class InventoryService {
     // Update product minimumStock as well to keep in sync
     return prisma.$transaction(async (tx) => {
       const updatedInventory = await tx.inventory.update({
-        where: { productId },
+        where: { id: inventory.id },
         data: {
           minimumStock: dto.minimumStock !== undefined ? dto.minimumStock : undefined,
           maximumStock: dto.maximumStock !== undefined ? dto.maximumStock : undefined,
@@ -379,7 +379,7 @@ export class InventoryService {
     const { productId, quantity, reference, remarks } = dto;
 
     return prisma.$transaction(async (tx) => {
-      const inventory = await tx.inventory.findUnique({
+      const inventory = await tx.inventory.findFirst({
         where: { productId },
         include: { product: true }
       });
@@ -393,7 +393,7 @@ export class InventoryService {
 
       // 1. Update Inventory availableStock
       await tx.inventory.update({
-        where: { productId },
+        where: { id: inventory.id },
         data: { availableStock: newStock }
       });
 
@@ -430,7 +430,7 @@ export class InventoryService {
     const { productId, quantity, reference, remarks } = dto;
 
     const result = await prisma.$transaction(async (tx) => {
-      const inventory = await tx.inventory.findUnique({
+      const inventory = await tx.inventory.findFirst({
         where: { productId },
         include: { product: true }
       });
@@ -448,7 +448,7 @@ export class InventoryService {
 
       // 1. Update Inventory availableStock
       await tx.inventory.update({
-        where: { productId },
+        where: { id: inventory.id },
         data: { availableStock: newStock }
       });
 
@@ -480,7 +480,7 @@ export class InventoryService {
     // Check for low-stock violations asynchronously
     (async () => {
       try {
-        const inv = await prisma.inventory.findUnique({
+        const inv = await prisma.inventory.findFirst({
           where: { productId: result.productId }
         });
         if (inv && inv.availableStock <= inv.minimumStock) {
@@ -518,7 +518,7 @@ export class InventoryService {
     const { productId, quantity: newStock, remarks } = dto;
 
     return prisma.$transaction(async (tx) => {
-      const inventory = await tx.inventory.findUnique({
+      const inventory = await tx.inventory.findFirst({
         where: { productId },
         include: { product: true }
       });
@@ -532,7 +532,7 @@ export class InventoryService {
 
       // 1. Update Inventory availableStock
       await tx.inventory.update({
-        where: { productId },
+        where: { id: inventory.id },
         data: { availableStock: newStock }
       });
 
@@ -568,7 +568,7 @@ export class InventoryService {
     const { productId, quantity, reference, remarks } = dto;
 
     return prisma.$transaction(async (tx) => {
-      const inventory = await tx.inventory.findUnique({
+      const inventory = await tx.inventory.findFirst({
         where: { productId },
         include: { product: true }
       });
@@ -587,7 +587,7 @@ export class InventoryService {
 
       // 1. Update Inventory availableStock and damagedStock
       await tx.inventory.update({
-        where: { productId },
+        where: { id: inventory.id },
         data: { 
           availableStock: newStock,
           damagedStock: newDamagedStock
@@ -627,7 +627,7 @@ export class InventoryService {
     const { productId, quantity, returnToType, reference, remarks } = dto;
 
     return prisma.$transaction(async (tx) => {
-      const inventory = await tx.inventory.findUnique({
+      const inventory = await tx.inventory.findFirst({
         where: { productId },
         include: { product: true }
       });
@@ -648,7 +648,7 @@ export class InventoryService {
 
       // 1. Update Inventory stocks
       await tx.inventory.update({
-        where: { productId },
+        where: { id: inventory.id },
         data: { 
           availableStock: newStock,
           damagedStock: newDamagedStock

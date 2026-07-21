@@ -102,6 +102,12 @@ export const DashboardLayout: React.FC = () => {
             <span>🏭</span> Inventory
           </NavLink>
           <NavLink
+            to="/dashboard/warehouses"
+            className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+          >
+            <span>🏙️</span> Warehouses
+          </NavLink>
+          <NavLink
             to="/dashboard/sales-challans"
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
@@ -141,6 +147,12 @@ export const DashboardLayout: React.FC = () => {
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
                 <span>⚙️</span> Settings
+              </NavLink>
+              <NavLink
+                to="/dashboard/email-logs"
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+              >
+                <span>✉️</span> Email Logs
               </NavLink>
             </div>
           )}

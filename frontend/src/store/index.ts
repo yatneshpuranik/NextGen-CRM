@@ -6,6 +6,7 @@ import inventoryReducer from './slices/inventorySlice';
 import salesChallanReducer from './slices/salesChallanSlice';
 import dashboardReducer from './slices/dashboardSlice';
 import enterpriseReducer from './slices/enterpriseSlice';
+import warehouseReducer from './slices/warehouseSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     salesChallan: salesChallanReducer,
     dashboard: dashboardReducer,
     enterprise: enterpriseReducer,
+    warehouse: warehouseReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

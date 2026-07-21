@@ -15,6 +15,8 @@ import pdfRouter from '../modules/pdf/pdf.routes';
 import uploadRouter from '../modules/upload/upload.routes';
 import auditRouter from '../modules/audit/audit.routes';
 import notificationRouter from '../modules/notification/notification.routes';
+import warehouseRouter from '../modules/warehouse/warehouse.routes';
+import emailLogRouter from '../modules/email-log/email-log.routes';
 
 const router = Router();
 
@@ -32,6 +34,8 @@ router.use('/notifications', notificationRouter);
 router.use('/settings', settingsRouter);
 router.use('/backup', backupRouter);
 router.use('/search', searchRouter);
+router.use('/warehouses', warehouseRouter);
+router.use('/email-logs', emailLogRouter);
 
 /**
  * @openapi

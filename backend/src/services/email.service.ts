@@ -14,6 +14,8 @@ const createTransporter = () => {
   });
 };
 
+import { prisma } from '../config/db';
+
 export const sendMail = async (
   to: string,
   subject: string,
@@ -35,9 +37,30 @@ export const sendMail = async (
     });
 
     logger.info(`Email sent successfully to ${to} for subject: "${subject}"`);
+
+    await prisma.emailLog.create({
+      data: {
+        recipient: to,
+        subject,
+        status: 'SENT',
+        sentTime: new Date()
+      }
+    }).catch(() => {});
+
     return true;
   } catch (error: any) {
     logger.error(`Failed to send email to ${to}: ${error.message}`, { stack: error.stack });
+
+    await prisma.emailLog.create({
+      data: {
+        recipient: to,
+        subject,
+        status: 'FAILED',
+        failureReason: error.message,
+        sentTime: new Date()
+      }
+    }).catch(() => {});
+
     return false;
   }
 };

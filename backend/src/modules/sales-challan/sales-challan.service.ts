@@ -341,7 +341,7 @@ export class SalesChallanService {
 
         // 2. Reduce inventory availableStock
         await tx.inventory.update({
-          where: { productId: item.productId },
+          where: { id: inventory.id },
           data: { availableStock: newStock }
         });
 
@@ -410,7 +410,7 @@ export class SalesChallanService {
 
         // Check for low-stock alarms
         for (const item of result.items) {
-          const inv = await prisma.inventory.findUnique({
+          const inv = await prisma.inventory.findFirst({
             where: { productId: item.productId }
           });
           if (inv && inv.availableStock <= inv.minimumStock) {
@@ -468,7 +468,7 @@ export class SalesChallanService {
     return prisma.$transaction(async (tx) => {
       // Restore stock for all items
       for (const item of challan.items) {
-        const inventory = await tx.inventory.findUnique({
+        const inventory = await tx.inventory.findFirst({
           where: { productId: item.productId }
         });
 
@@ -481,7 +481,7 @@ export class SalesChallanService {
 
         // 1. Add back to availableStock
         await tx.inventory.update({
-          where: { productId: item.productId },
+          where: { id: inventory.id },
           data: { availableStock: newStock }
         });
 

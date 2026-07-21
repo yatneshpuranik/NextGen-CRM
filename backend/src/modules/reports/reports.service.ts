@@ -121,7 +121,7 @@ export class ReportsService {
       prisma.product.findMany({
         where: whereClause,
         include: {
-          inventory: true
+          inventories: true
         },
         orderBy: { currentStock: 'asc' },
         skip,
@@ -145,12 +145,12 @@ export class ReportsService {
         brand: p.brand,
         currentStock: stock,
         minimumStock: p.minimumStock,
-        reorderLevel: p.inventory?.reorderLevel || 10,
+        reorderLevel: p.inventories?.[0]?.reorderLevel || 10,
         purchasePrice,
         sellingPrice,
         costValue,
         retailValue,
-        warehouseLocation: p.inventory?.warehouseLocation || 'Warehouse A',
+        warehouseLocation: p.inventories?.[0]?.warehouseLocation || 'Warehouse A',
         status: stock === 0 ? 'Out of Stock' : stock <= p.minimumStock ? 'Low Stock' : 'In Stock'
       };
     });

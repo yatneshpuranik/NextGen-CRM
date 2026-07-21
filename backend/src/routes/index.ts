@@ -2,10 +2,14 @@ import { Router } from 'express';
 import { sendSuccess } from '../utils/response';
 
 import authRouter from '../modules/auth/auth.routes';
+import customerRouter from '../modules/customer/customer.routes';
+import productRouter from '../modules/product/product.routes';
 
 const router = Router();
 
 router.use('/auth', authRouter);
+router.use('/customers', customerRouter);
+router.use('/products', productRouter);
 
 /**
  * @openapi

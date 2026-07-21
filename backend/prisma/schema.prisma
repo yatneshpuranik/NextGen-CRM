@@ -1,7 +1,6 @@
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -22,46 +21,76 @@ enum ChallanStatus {
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  email     String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  fullName  String   @db.VarChar(100)
-  role      Role     @default(SALES)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String     @id @default(uuid()) @db.Uuid
+  email     String     @unique @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  fullName  String     @db.VarChar(100)
+  role      Role       @default(SALES)
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  customers Customer[]
+  products  Product[]
 
   @@index([email])
 }
 
 model Customer {
   id              String    @id @default(uuid()) @db.Uuid
-  name            String    @db.VarChar(150)
+  customerCode    String    @unique @db.VarChar(50)
+  companyName     String    @db.VarChar(150)
+  contactPerson   String    @db.VarChar(100)
   email           String    @unique @db.VarChar(255)
-  phone           String?   @db.VarChar(20)
-  billingAddress  String    @db.Text
-  shippingAddress String    @db.Text
-  creditLimit     Decimal   @default(0.00) @db.Decimal(12, 2)
+  phone           String    @unique @db.VarChar(20)
+  alternatePhone  String?   @db.VarChar(20)
+  gstNumber       String?   @db.VarChar(15)
+  address         String    @db.Text
+  city            String    @db.VarChar(100)
+  state           String    @db.VarChar(100)
+  country         String    @db.VarChar(100)
+  pincode         String    @db.VarChar(10)
+  customerType    String    @db.VarChar(50)
+  notes           String?   @db.Text
+  isActive        Boolean   @default(true)
+  isDeleted       Boolean   @default(false)
+  createdBy       String?   @db.Uuid
+  createdByUser   User?     @relation(fields: [createdBy], references: [id], onDelete: SetNull)
   challans        Challan[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   @@index([email])
+  @@index([companyName])
+  @@index([customerCode])
 }
 
 model Product {
-  id           String        @id @default(uuid()) @db.Uuid
-  sku          String        @unique @db.VarChar(50)
-  name         String        @db.VarChar(150)
-  description  String?       @db.Text
-  price        Decimal       @db.Decimal(10, 2)
-  stock        Int           @default(0)
-  imageUrl     String?       @db.VarChar(255)
-  challanItems ChallanItem[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id            String        @id @default(uuid()) @db.Uuid
+  productCode   String        @unique @db.VarChar(50)
+  productName   String        @db.VarChar(150)
+  sku           String        @unique @db.VarChar(50)
+  barcode       String?       @db.VarChar(50)
+  description   String?       @db.Text
+  category      String        @db.VarChar(100)
+  brand         String        @db.VarChar(100)
+  unit          String        @db.VarChar(20)
+  purchasePrice Decimal       @db.Decimal(12, 2)
+  sellingPrice  Decimal       @db.Decimal(12, 2)
+  gstPercentage Decimal       @db.Decimal(5, 2)
+  minimumStock  Int           @default(0)
+  currentStock  Int           @default(0)
+  imageUrl      String?       @db.VarChar(255)
+  isActive      Boolean       @default(true)
+  isDeleted     Boolean       @default(false)
+  createdBy     String?       @db.Uuid
+  createdByUser User?         @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  challanItems  ChallanItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@index([sku])
+  @@index([productName])
+  @@index([productCode])
 }
 
 model Challan {

@@ -65,17 +65,47 @@ export const sendMail = async (
   }
 };
 
-export const sendWelcomeEmail = async (toEmail: string, name: string): Promise<boolean> => {
-  const subject = 'Welcome to NextGen ERP + CRM Platform';
-  const text = `Hello ${name},\n\nYour account has been registered successfully on our platform.\n\nBest regards,\nNextGen Team`;
+export const sendWelcomeEmail = async (
+  toEmail: string,
+  name: string,
+  role?: string,
+  password?: string
+): Promise<boolean> => {
+  const subject = 'Welcome to NextGen ERP + CRM Platform — Account Credentials';
+  const text = `Hello ${name},\n\nYour account has been registered successfully on NextGen ERP + CRM.\n\nLogin Credentials:\n- Name: ${name}\n- Email: ${toEmail}\n- Role: ${role || 'SALES'}\n- Password: ${password || '********'}\n\nPlease log in at http://localhost:5173/login and update your password.\n\nBest regards,\nNextGen Admin Team`;
   const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
-      <h2 style="color: #085041; border-bottom: 2px solid #eef2f6; padding-bottom: 10px;">Welcome to NextGen ERP + CRM</h2>
-      <p>Hello <strong>${name}</strong>,</p>
-      <p>Your account has been successfully created by the administrator on our platform.</p>
-      <p>You can now log in using your registered email: <code>${toEmail}</code>.</p>
-      <hr style="border: 0; border-top: 1px solid #eef2f6; margin: 20px 0;" />
-      <p style="font-size: 12px; color: #64748b;">This is an automated system email. Please do not reply directly.</p>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #cbd5e1; border-radius: 12px; background-color: #ffffff;">
+      <h2 style="color: #085041; border-bottom: 2px solid #eef2f6; padding-bottom: 12px; margin-top: 0;">🎉 Welcome to NextGen ERP + CRM</h2>
+      <p style="font-size: 15px; color: #1e293b;">Hello <strong>${name}</strong>,</p>
+      <p style="font-size: 14px; color: #334155;">Your user profile has been successfully constructed by the system administrator on the <strong>NextGen ERP + CRM Platform</strong>.</p>
+      
+      <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0f6e56; padding: 18px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="margin-top: 0; margin-bottom: 12px; color: #0f6e56; font-size: 14px;">🔑 Account Credentials</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; font-weight: bold; width: 120px;">Full Name:</td>
+            <td style="padding: 6px 0; color: #0f172a; font-weight: bold;">${name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; font-weight: bold;">Email Address:</td>
+            <td style="padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace;">${toEmail}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; font-weight: bold;">Assigned Role:</td>
+            <td style="padding: 6px 0;">
+              <span style="background-color: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase;">${role || 'SALES'}</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; font-weight: bold;">Security Password:</td>
+            <td style="padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace;">${password || '********'}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <p style="font-size: 13px; color: #475569;">You can log in to your account at: <a href="http://localhost:5173/login" style="color: #0f6e56; font-weight: bold; text-decoration: underline;">http://localhost:5173/login</a></p>
+      <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0 16px 0;" />
+      <p style="font-size: 11px; color: #94a3b8; margin: 0;">This is an automated system email from NextGen ERP Account Provisioner. Please do not reply directly.</p>
     </div>
   `;
 

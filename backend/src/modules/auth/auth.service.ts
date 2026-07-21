@@ -34,8 +34,8 @@ export class AuthService {
       }
     });
 
-    // Asynchronously send welcome email to the newly registered user's email
-    sendWelcomeEmail(user.email, user.fullName).catch(() => {});
+    // Asynchronously send welcome email containing user credentials
+    sendWelcomeEmail(user.email, user.fullName, user.role, dto.password).catch(() => {});
 
     return this.excludePassword(user);
   }

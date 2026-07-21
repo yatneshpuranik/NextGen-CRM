@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { FileText, Clock3, CheckCircle2, Package, Warehouse, Plus } from 'lucide-react';
+import ExportButton from '../components/ExportButton';
 import { fetchSalesChallans, setFilters, resetFilters, setPage } from '../store/slices/salesChallanSlice';
 import { fetchCustomers } from '../store/slices/customerSlice';
 import type { RootState } from '../store';
@@ -20,8 +22,10 @@ export const ChallansPage: React.FC = () => {
   const isReadOnly = user?.role === 'WAREHOUSE' || user?.role === 'ACCOUNTS';
 
   useEffect(() => {
-    dispatch(fetchCustomers() as any);
-  }, [dispatch]);
+    if (user?.role === 'ADMIN' || user?.role === 'SALES' || user?.role === 'ACCOUNTS') {
+      dispatch(fetchCustomers() as any);
+    }
+  }, [dispatch, user?.role]);
 
   useEffect(() => {
     dispatch(fetchSalesChallans() as any);
@@ -54,11 +58,13 @@ export const ChallansPage: React.FC = () => {
     }
   };
 
+  const challanItems = Array.isArray(challanList) ? challanList : [];
+
   // Compute local summary counts
-  const totalCount = pagination.totalRecords;
-  const draftCount = challanList.filter((c) => c.status === 'DRAFT').length;
-  const confirmedCount = challanList.filter((c) => c.status === 'CONFIRMED').length;
-  const completedCount = challanList.filter((c) => c.status === 'COMPLETED').length;
+  const totalCount = pagination.totalRecords || challanItems.length;
+  const draftCount = challanItems.filter((c) => c.status === 'DRAFT').length;
+  const confirmedCount = challanItems.filter((c) => c.status === 'CONFIRMED').length;
+  const completedCount = challanItems.filter((c) => c.status === 'COMPLETED').length;
 
   return (
     <div className="space-y-6">
@@ -69,12 +75,13 @@ export const ChallansPage: React.FC = () => {
           <p className="text-sm text-[var(--text-secondary)]">Create, track, and process outbound customer shipments and delivery challans.</p>
         </div>
         {!isReadOnly && (
-          <div className="flex gap-3">
-            <Link to="/dashboard/inventory" className="btn-secondary-action">
-              <span>🏭</span> Stock Center
+          <div className="flex flex-wrap items-center gap-3">
+            <ExportButton module="challans" />
+            <Link to="/dashboard/inventory" className="btn-secondary-action flex items-center gap-1.5">
+              <Warehouse className="w-4 h-4 text-teal-600" /> Stock Center
             </Link>
-            <Link to="/dashboard/sales-challans/new" className="btn-primary-action">
-              <span>➕</span> Create Sales Challan
+            <Link to="/dashboard/sales-challans/new" className="btn-primary-action flex items-center gap-1.5">
+              <Plus className="w-4 h-4" /> Create Sales Challan
             </Link>
           </div>
         )}
@@ -82,28 +89,36 @@ export const ChallansPage: React.FC = () => {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="stat-card purple">
-          <span className="stat-icon text-xl">📜</span>
-          <span className="stat-number">{totalCount}</span>
-          <span className="stat-label">Total Delivery Challans</span>
+        <div className="stat-card purple flex items-center justify-between">
+          <div>
+            <span className="stat-number block">{totalCount}</span>
+            <span className="stat-label">Total Delivery Challans</span>
+          </div>
+          <FileText className="w-7 h-7 text-purple-600 opacity-80" />
         </div>
 
-        <div className="stat-card amber">
-          <span className="stat-icon text-xl">⏳</span>
-          <span className="stat-number">{draftCount}</span>
-          <span className="stat-label">Draft Orders</span>
+        <div className="stat-card amber flex items-center justify-between">
+          <div>
+            <span className="stat-number block">{draftCount}</span>
+            <span className="stat-label">Draft Orders</span>
+          </div>
+          <Clock3 className="w-7 h-7 text-amber-600 opacity-80" />
         </div>
 
-        <div className="stat-card teal">
-          <span className="stat-icon text-xl">✅</span>
-          <span className="stat-number">{confirmedCount}</span>
-          <span className="stat-label">Confirmed Challans</span>
+        <div className="stat-card teal flex items-center justify-between">
+          <div>
+            <span className="stat-number block">{confirmedCount}</span>
+            <span className="stat-label">Confirmed Challans</span>
+          </div>
+          <CheckCircle2 className="w-7 h-7 text-teal-600 opacity-80" />
         </div>
 
-        <div className="stat-card teal">
-          <span className="stat-icon text-xl">📦</span>
-          <span className="stat-number">{completedCount}</span>
-          <span className="stat-label">Completed Delivery Loads</span>
+        <div className="stat-card teal flex items-center justify-between">
+          <div>
+            <span className="stat-number block">{completedCount}</span>
+            <span className="stat-label">Completed Delivery Loads</span>
+          </div>
+          <Package className="w-7 h-7 text-emerald-600 opacity-80" />
         </div>
       </div>
 
@@ -168,9 +183,9 @@ export const ChallansPage: React.FC = () => {
 
       {/* List Table */}
       <div className="content-card">
-        {loading && challanList.length === 0 ? (
+        {loading && challanItems.length === 0 ? (
           <Loader />
-        ) : challanList && challanList.length > 0 ? (
+        ) : challanItems && challanItems.length > 0 ? (
           <div className="space-y-4">
             <div className="overflow-x-auto">
               <table className="modern-table text-sm">
@@ -186,7 +201,7 @@ export const ChallansPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {challanList.map((item) => (
+                  {challanItems.map((item) => (
                     <tr key={item.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="py-4 pr-4">
                         <Link to={`/dashboard/sales-challans/${item.id}`} className="font-mono font-medium text-[var(--teal-text)] hover:underline">

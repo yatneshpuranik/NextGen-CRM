@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Eye, Pencil, Ban, CheckCircle2, Trash2 } from 'lucide-react';
 import type { Customer } from '../../store/slices/customerSlice';
 import type { Role } from '../../store/slices/authSlice';
 
@@ -101,7 +102,7 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
                         }}
                         className="w-full px-4 py-2 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] flex items-center gap-2 transition"
                       >
-                        <span>👁️</span> View Profile
+                        <Eye className="w-4 h-4 text-teal-600" /> View Profile
                       </button>
 
                       {canEdit && (
@@ -114,7 +115,7 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
                             }}
                             className="w-full px-4 py-2 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] flex items-center gap-2 transition"
                           >
-                            <span>✏️</span> Edit Details
+                            <Pencil className="w-4 h-4 text-amber-500" /> Edit Details
                           </button>
                           <button
                             type="button"
@@ -126,11 +127,11 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
                           >
                             {customer.isActive ? (
                               <>
-                                <span>🚫</span> Deactivate
+                                <Ban className="w-4 h-4 text-red-500" /> Deactivate
                               </>
                             ) : (
                               <>
-                                <span>✅</span> Activate
+                                <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Activate
                               </>
                             )}
                           </button>
@@ -146,7 +147,7 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
                           }}
                           className="w-full px-4 py-2 text-xs font-medium text-[var(--red-icon)] hover:bg-[var(--red-bg)] flex items-center gap-2 transition border-t border-[var(--border)]"
                         >
-                          <span>🗑️</span> Archive/Delete
+                          <Trash2 className="w-4 h-4 text-red-500" /> Archive/Delete
                         </button>
                       )}
                     </div>

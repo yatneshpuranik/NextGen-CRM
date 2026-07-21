@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Package, Eye, Pencil, RefreshCw, Trash2 } from 'lucide-react';
 import type { Product } from '../../store/slices/productSlice';
 import type { Role } from '../../store/slices/authSlice';
 
@@ -64,7 +65,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                     />
                   ) : (
                     <div className="w-8 h-8 rounded-md bg-[var(--surface-page)] border border-[var(--border)] flex items-center justify-center text-xs text-[var(--text-secondary)] font-bold">
-                      📦
+                      <Package className="w-4 h-4 text-[var(--text-muted)]" />
                     </div>
                   )}
                   <span>{product.productName}</span>
@@ -119,7 +120,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                         }}
                         className="w-full px-4 py-2 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] flex items-center gap-2 transition"
                       >
-                        <span>👁️</span> View Profile
+                        <Eye className="w-4 h-4 text-teal-600" /> View Profile
                       </button>
 
                       {canEdit && (
@@ -132,7 +133,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                             }}
                             className="w-full px-4 py-2 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] flex items-center gap-2 transition"
                           >
-                            <span>✏️</span> Edit Details
+                            <Pencil className="w-4 h-4 text-amber-500" /> Edit Details
                           </button>
                           <button
                             type="button"
@@ -142,7 +143,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                             }}
                             className="w-full px-4 py-2 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] flex items-center gap-2 transition"
                           >
-                            <span>🔄</span> {product.isActive ? 'Deactivate' : 'Activate'}
+                            <RefreshCw className="w-4 h-4 text-blue-500" /> {product.isActive ? 'Deactivate' : 'Activate'}
                           </button>
                         </>
                       )}
@@ -156,7 +157,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                           }}
                           className="w-full px-4 py-2 text-xs font-medium text-[var(--status-cancelled)] hover:bg-red-50 hover:text-red-700 flex items-center gap-2 transition border-t border-[var(--border)]"
                         >
-                          <span>🗑️</span> Delete Product
+                          <Trash2 className="w-4 h-4 text-red-500" /> Delete Product
                         </button>
                       )}
                     </div>
@@ -170,3 +171,5 @@ export const ProductTable: React.FC<ProductTableProps> = ({
     </div>
   );
 };
+
+export default ProductTable;

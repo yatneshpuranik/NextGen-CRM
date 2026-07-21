@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { AlertTriangle, Download, Upload, Users, Package, Warehouse, FileText } from 'lucide-react';
 import type { AppDispatch } from '../store';
 import { restoreDatabase } from '../store/slices/enterpriseSlice';
 import Toast from '../components/Toast';
@@ -70,8 +71,8 @@ export const BackupRestorePage: React.FC = () => {
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-[var(--surface-card)] rounded-lg p-6 max-w-md w-full border border-[var(--border)] space-y-4">
-            <h4 className="text-lg font-medium text-[var(--red-text)]">
-              ⚠️ Warning: Destructive Restore Action
+            <h4 className="text-lg font-medium text-[var(--red-text)] flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-500" /> Warning: Destructive Restore Action
             </h4>
             <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
               This action will completely truncate and clear all active records inside your database tables (including Customers, Products, Stock Transactions, Inventory levels, and Delivery Challans) and reload them from the backup envelope.
@@ -118,9 +119,9 @@ export const BackupRestorePage: React.FC = () => {
             
             <button 
               onClick={triggerJsonExport}
-              className="w-full py-2.5 bg-[var(--teal-bg)] border border-[var(--teal-border)] text-[var(--teal-text)] font-semibold rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-center"
+              className="w-full py-2.5 bg-[var(--teal-bg)] border border-[var(--teal-border)] text-[var(--teal-text)] font-semibold rounded-lg hover:bg-[var(--surface-hover)] transition-colors flex items-center justify-center gap-2"
             >
-              📥 Export Full JSON Backup
+              <Download className="w-4 h-4" /> Export Full JSON Backup
             </button>
 
             <div className="border-t border-[var(--border)] pt-4 space-y-2">
@@ -138,9 +139,9 @@ export const BackupRestorePage: React.FC = () => {
               />
               <label 
                 htmlFor="restoreUpload"
-                className="inline-block w-full py-2.5 border border-[var(--red-icon)] bg-[var(--red-bg)] text-[var(--red-text)] font-semibold rounded-lg cursor-pointer hover:bg-[var(--surface-hover)] transition-colors text-center"
+                className="inline-flex items-center justify-center gap-2 w-full py-2.5 border border-[var(--red-icon)] bg-[var(--red-bg)] text-[var(--red-text)] font-semibold rounded-lg cursor-pointer hover:bg-[var(--surface-hover)] transition-colors text-center"
               >
-                📤 Upload & Restore JSON Database
+                <Upload className="w-4 h-4" /> Upload & Restore JSON Database
               </label>
             </div>
           </div>
@@ -158,27 +159,27 @@ export const BackupRestorePage: React.FC = () => {
             <div className="grid grid-cols-2 gap-3">
               <button 
                 onClick={() => triggerCsvExport('customers')}
-                className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold"
+                className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold flex items-center justify-center gap-1.5"
               >
-                👥 Customers CSV
+                <Users className="w-4 h-4 text-purple-600" /> Customers CSV
               </button>
               <button 
                 onClick={() => triggerCsvExport('products')}
-                className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold"
+                className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold flex items-center justify-center gap-1.5"
               >
-                📦 Products CSV
+                <Package className="w-4 h-4 text-teal-600" /> Products CSV
               </button>
               <button 
                 onClick={() => triggerCsvExport('inventory')}
-                className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold"
+                className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold flex items-center justify-center gap-1.5"
               >
-                🏭 Inventory CSV
+                <Warehouse className="w-4 h-4 text-blue-600" /> Inventory CSV
               </button>
               <button 
                 onClick={() => triggerCsvExport('sales')}
-                className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold"
+                className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold flex items-center justify-center gap-1.5"
               >
-                📜 Sales Challans CSV
+                <FileText className="w-4 h-4 text-amber-600" /> Sales Challans CSV
               </button>
             </div>
           </div>

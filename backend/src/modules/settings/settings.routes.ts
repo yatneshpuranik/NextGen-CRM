@@ -23,7 +23,7 @@ router.use(authenticateJWT);
  *       200:
  *         description: Company settings details returned.
  */
-router.get('/', controller.get);
+router.get('/', authorizeRoles('ADMIN'), controller.get);
 
 /**
  * @openapi

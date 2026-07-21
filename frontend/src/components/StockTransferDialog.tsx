@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ArrowLeftRight, X } from 'lucide-react';
 import type { RootState, AppDispatch } from '../store';
 import { fetchWarehouses, transferStock } from '../store/slices/warehouseSlice';
 import { fetchProducts } from '../store/slices/productSlice';
@@ -9,7 +10,7 @@ interface Props {
   onClose: () => void;
 }
 
-const StockTransferDialog: React.FC<Props> = ({ isOpen, onClose }) => {
+export const StockTransferDialog: React.FC<Props> = ({ isOpen, onClose }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { warehouses } = useSelector((state: RootState) => state.warehouse);
   const { products } = useSelector((state: RootState) => state.product);
@@ -64,12 +65,18 @@ const StockTransferDialog: React.FC<Props> = ({ isOpen, onClose }) => {
     }
   };
 
+  const warehouseList = Array.isArray(warehouses) ? warehouses : [];
+
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-[var(--surface-card)] rounded-xl shadow-xl border max-w-lg w-full p-6 space-y-4">
         <div className="flex justify-between items-center border-b pb-3">
-          <h3 className="text-lg font-medium text-[var(--text-primary)]">🔄 Stock Transfer Request</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+          <h3 className="text-lg font-medium text-[var(--text-primary)] flex items-center gap-2">
+            <ArrowLeftRight className="w-5 h-5 text-purple-600" /> Stock Transfer Request
+          </h3>
+          <button onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1">
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         {modalError && (
@@ -88,7 +95,7 @@ const StockTransferDialog: React.FC<Props> = ({ isOpen, onClose }) => {
               required
             >
               <option value="">-- Select Source --</option>
-              {warehouses.map(w => (
+              {warehouseList.map(w => (
                 <option key={w.id} value={w.id}>{w.code} - {w.name}</option>
               ))}
             </select>
@@ -103,7 +110,7 @@ const StockTransferDialog: React.FC<Props> = ({ isOpen, onClose }) => {
               required
             >
               <option value="">-- Select Destination --</option>
-              {warehouses.map(w => (
+              {warehouseList.map(w => (
                 <option key={w.id} value={w.id}>{w.code} - {w.name}</option>
               ))}
             </select>

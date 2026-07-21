@@ -154,7 +154,7 @@ router.post(
 router.get(
   '/',
   authenticateJWT,
-  authorizeRoles('ADMIN', 'SALES', 'WAREHOUSE', 'ACCOUNTS'),
+  authorizeRoles('ADMIN', 'SALES', 'ACCOUNTS'),
   controller.getAll
 );
 
@@ -269,7 +269,7 @@ router.get(
 router.get(
   '/:id',
   authenticateJWT,
-  authorizeRoles('ADMIN', 'SALES', 'WAREHOUSE', 'ACCOUNTS'),
+  authorizeRoles('ADMIN', 'SALES', 'ACCOUNTS'),
   controller.getById
 );
 

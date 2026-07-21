@@ -1,195 +1,122 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import type { AppDispatch, RootState } from '../store';
+import { Plus, Search, AlertTriangle, Package, Upload } from 'lucide-react';
 import {
   fetchProducts,
-  setFilters,
-  setPage,
   deleteProduct,
   activateProduct,
   deactivateProduct,
+  setFilters,
   resetFilters,
+  setPage,
 } from '../store/slices/productSlice';
-import { ProductTable } from '../components/products/ProductTable';
-import { FilterPanel } from '../components/products/FilterPanel';
-import { ConfirmationModal } from '../components/ConfirmationModal';
-import Toast from '../components/Toast';
+import ProductTable from '../components/products/ProductTable';
+import FilterPanel from '../components/products/FilterPanel';
 import Loader from '../components/Loader';
+import ConfirmationModal from '../components/ConfirmationModal';
+import ExportButton from '../components/ExportButton';
+import ImportModal from '../components/ImportModal';
+import type { RootState, AppDispatch } from '../store';
 
 export const ProductsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const { user } = useSelector((state: RootState) => state.auth);
-  const { products, loading, error, pagination, filters } = useSelector(
+  const { products, pagination, filters, loading, error } = useSelector(
     (state: RootState) => state.product
   );
+  const { user } = useSelector((state: RootState) => state.auth);
 
-  // Modals and Toasts
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
-  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; productId: string | null }>({
-    isOpen: false,
-    productId: null,
-  });
-  const [statusModal, setStatusModal] = useState<{
-    isOpen: boolean;
-    productId: string | null;
-    currentActive: boolean;
-  }>({
-    isOpen: false,
-    productId: null,
-    currentActive: false,
-  });
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showImportModal, setShowImportModal] = useState(false);
 
-  // Local search query to prevent typing lag
-  const [searchQuery, setSearchQuery] = useState(filters.search);
+  const canWrite = user?.role === 'ADMIN' || user?.role === 'WAREHOUSE';
 
-  // Trigger search filter in Redux after debounce
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch, pagination.page, filters]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       dispatch(setFilters({ search: searchQuery }));
     }, 400);
+
     return () => clearTimeout(timer);
   }, [searchQuery, dispatch]);
 
-  // Sync search state if reset
-  useEffect(() => {
-    setSearchQuery(filters.search);
-  }, [filters.search]);
-
-  // Refetch when filters or pagination page change
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, [
-    dispatch,
-    pagination.page,
-    pagination.limit,
-    filters.search,
-    filters.isActive,
-    filters.category,
-    filters.brand,
-    filters.sortBy,
-    filters.sortOrder,
-  ]);
-
-  const handleFilterChange = (newFilters: any) => {
+  const handleFilterChange = (newFilters: Record<string, string>) => {
     dispatch(setFilters(newFilters));
   };
 
   const handleFilterReset = () => {
+    setSearchQuery('');
     dispatch(resetFilters());
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteId) {
+      await dispatch(deleteProduct(deleteId));
+      setDeleteId(null);
+      dispatch(fetchProducts());
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
+    if (currentStatus) {
+      await dispatch(deactivateProduct(id));
+    } else {
+      await dispatch(activateProduct(id));
+    }
+    dispatch(fetchProducts());
   };
 
   const handlePageChange = (newPage: number) => {
     dispatch(setPage(newPage));
   };
 
-  const handleToggleStatus = (id: string, currentActive: boolean) => {
-    setStatusModal({
-      isOpen: true,
-      productId: id,
-      currentActive,
-    });
-  };
-
-  const handleConfirmStatusToggle = async () => {
-    const { productId, currentActive } = statusModal;
-    if (!productId) return;
-
-    try {
-      if (currentActive) {
-        await dispatch(deactivateProduct(productId)).unwrap();
-        setToast({ message: 'Product profile deactivated successfully', type: 'info' });
-      } else {
-        await dispatch(activateProduct(productId)).unwrap();
-        setToast({ message: 'Product profile activated successfully', type: 'success' });
-      }
-    } catch (err: any) {
-      setToast({ message: err || 'Failed to toggle product status', type: 'error' });
-    } finally {
-      setStatusModal({ isOpen: false, productId: null, currentActive: false });
-    }
-  };
-
-  const handleDelete = (id: string) => {
-    setDeleteModal({
-      isOpen: true,
-      productId: id,
-    });
-  };
-
-  const handleConfirmDelete = async () => {
-    const { productId } = deleteModal;
-    if (!productId) return;
-
-    try {
-      await dispatch(deleteProduct(productId)).unwrap();
-      setToast({ message: 'Product profile archived successfully', type: 'success' });
-      dispatch(fetchProducts());
-    } catch (err: any) {
-      setToast({ message: err || 'Failed to delete product', type: 'error' });
-    } finally {
-      setDeleteModal({ isOpen: false, productId: null });
-    }
-  };
-
-  const canWrite = user?.role === 'ADMIN' || user?.role === 'WAREHOUSE';
-
   return (
     <div className="space-y-6">
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
-
-      {/* Confirmation Modals */}
-      <ConfirmationModal
-        isOpen={deleteModal.isOpen}
-        title="Delete Product Profile"
-        message="Are you sure you want to archive this product? This action is soft-reversible but hides the product from new challan listings."
-        confirmText="Archive Product"
-        type="danger"
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setDeleteModal({ isOpen: false, productId: null })}
-      />
-
-      <ConfirmationModal
-        isOpen={statusModal.isOpen}
-        title={statusModal.currentActive ? 'Deactivate Product' : 'Activate Product'}
-        message={
-          statusModal.currentActive
-            ? 'Deactivating this product hides it from active listings and prevents it from being added to new challans.'
-            : 'Activating this product makes it visible and available for catalog allocations.'
-        }
-        confirmText={statusModal.currentActive ? 'Deactivate' : 'Activate'}
-        type="warning"
-        onConfirm={handleConfirmStatusToggle}
-        onCancel={() => setStatusModal({ isOpen: false, productId: null, currentActive: false })}
-      />
-
-      {/* Header Block */}
-      <header className="flex justify-between items-center pb-4 border-b border-[var(--border)]">
+      {/* Header */}
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-medium text-[var(--text-primary)]">Product Directory</h2>
-          <p className="text-sm text-[var(--text-secondary)] mt-0.5">Manage enterprise product catalogs, stock benchmarks, and pricing.</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
+            Products Catalog
+          </h1>
+          <p className="text-xs text-[var(--text-secondary)] mt-1">
+            Manage product inventory items, SKUs, category classifications, and pricing structures.
+          </p>
         </div>
-        {canWrite && (
-          <button
-            onClick={() => navigate('/dashboard/products/new')}
-            className="btn-primary-action"
-          >
-            <span>➕</span> Add Product
-          </button>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          <ExportButton module="products" />
+          {canWrite && (
+            <>
+              <button
+                type="button"
+                onClick={() => setShowImportModal(true)}
+                className="px-3.5 py-2 text-xs font-semibold rounded-lg border border-[var(--border)] bg-[var(--surface-card)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition flex items-center gap-1.5"
+              >
+                <Upload className="w-4 h-4 text-teal-600" /> Import
+              </button>
+              <button
+                onClick={() => navigate('/dashboard/products/new')}
+                className="btn-primary-action flex items-center gap-1.5"
+              >
+                <Plus className="w-4 h-4" /> Add Product
+              </button>
+            </>
+          )}
+        </div>
       </header>
 
       {/* Search Bar */}
       <div className="flex gap-4 items-center bg-[var(--surface-card)] p-4 rounded-xl border border-[var(--border)]">
-        <span className="text-lg text-[var(--text-secondary)]">🔍</span>
+        <Search className="w-5 h-5 text-[var(--text-secondary)]" />
         <input
           type="text"
           value={searchQuery}
@@ -216,8 +143,8 @@ export const ProductsPage: React.FC = () => {
 
       {/* Error state */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-          ⚠️ {error}
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-red-500" /> {error}
         </div>
       )}
 
@@ -265,8 +192,8 @@ export const ProductsPage: React.FC = () => {
           </div>
         ) : (
           !loading && (
-            <div className="text-center py-16 border border-dashed border-[var(--border)] bg-[var(--surface-card)] rounded-xl">
-              <span className="text-4xl block mb-3">📦</span>
+            <div className="text-center py-16 border border-dashed border-[var(--border)] bg-[var(--surface-card)] rounded-xl flex flex-col items-center">
+              <Package className="w-12 h-12 text-[var(--text-muted)] mb-3" />
               <h3 className="text-sm font-semibold text-[var(--text-primary)]">No products matching filters found</h3>
               <p className="text-xs text-[var(--text-secondary)] mt-1 max-w-sm mx-auto">Try adjusting your search queries or resetting all filtering metrics.</p>
               {canWrite && (
@@ -274,13 +201,34 @@ export const ProductsPage: React.FC = () => {
                   onClick={() => navigate('/dashboard/products/new')}
                   className="mt-4 px-4 py-2 border border-[var(--teal-primary)] text-[var(--teal-text)] text-xs font-semibold rounded-lg hover:bg-teal-50 transition"
                 >
-                  Add New Product
+                  Create Product
                 </button>
               )}
             </div>
           )
         )}
       </div>
+
+      {/* Import Modal */}
+      <ImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        module="products"
+        moduleTitle="Products"
+        onSuccess={() => dispatch(fetchProducts())}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={Boolean(deleteId)}
+        title="Delete Product Listing"
+        message="Are you sure you want to permanently delete this product? This action cannot be undone."
+        confirmText="Delete Product"
+        cancelText="Cancel"
+        type="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 };

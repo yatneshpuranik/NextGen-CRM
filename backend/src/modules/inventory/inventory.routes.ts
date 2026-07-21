@@ -98,7 +98,7 @@ router.use(authenticateJWT);
  */
 router.get(
   '/', 
-  authorizeRoles('ADMIN', 'WAREHOUSE', 'SALES', 'ACCOUNTS'), 
+  authorizeRoles('ADMIN', 'WAREHOUSE', 'ACCOUNTS'), 
   controller.getInventory
 );
 
@@ -120,7 +120,7 @@ router.get(
  */
 router.get(
   '/summary', 
-  authorizeRoles('ADMIN', 'WAREHOUSE', 'SALES', 'ACCOUNTS'), 
+  authorizeRoles('ADMIN', 'WAREHOUSE', 'ACCOUNTS'), 
   controller.getSummary
 );
 
@@ -151,7 +151,7 @@ router.get(
  */
 router.get(
   '/low-stock', 
-  authorizeRoles('ADMIN', 'WAREHOUSE', 'SALES', 'ACCOUNTS'), 
+  authorizeRoles('ADMIN', 'WAREHOUSE', 'ACCOUNTS'), 
   controller.getLowStock
 );
 
@@ -182,7 +182,7 @@ router.get(
  */
 router.get(
   '/out-of-stock', 
-  authorizeRoles('ADMIN', 'WAREHOUSE', 'SALES', 'ACCOUNTS'), 
+  authorizeRoles('ADMIN', 'WAREHOUSE', 'ACCOUNTS'), 
   controller.getOutOfStock
 );
 
@@ -236,7 +236,7 @@ router.get(
  */
 router.get(
   '/history', 
-  authorizeRoles('ADMIN', 'WAREHOUSE', 'SALES', 'ACCOUNTS'), 
+  authorizeRoles('ADMIN', 'WAREHOUSE', 'ACCOUNTS'), 
   controller.getTransactionHistory
 );
 
@@ -264,7 +264,7 @@ router.get(
  */
 router.get(
   '/product/:productId', 
-  authorizeRoles('ADMIN', 'WAREHOUSE', 'SALES', 'ACCOUNTS'), 
+  authorizeRoles('ADMIN', 'WAREHOUSE', 'ACCOUNTS'), 
   controller.getInventoryByProductId
 );
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Trash2 } from 'lucide-react';
 import { 
   createSalesChallan, 
   updateSalesChallan, 
@@ -34,6 +35,17 @@ export const ChallanFormPage: React.FC = () => {
   const { singleChallan, loading, error } = useSelector((state: RootState) => state.salesChallan);
   const { customers } = useSelector((state: RootState) => state.customer);
   const { products } = useSelector((state: RootState) => state.product);
+
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  if (user && user.role !== 'ADMIN' && user.role !== 'SALES') {
+    return (
+      <div className="content-card p-12 text-center space-y-3">
+        <p className="text-base font-semibold text-[var(--red-icon)]">Access Restricted</p>
+        <p className="text-xs text-[var(--text-secondary)]">You don't have permission to perform this action.</p>
+      </div>
+    );
+  }
 
   // Form states
   const [customerId, setCustomerId] = useState('');
@@ -385,9 +397,9 @@ export const ChallanFormPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => handleRemoveProduct(item.productId)}
-                              className="text-[var(--red-icon)] hover:text-red-700 transition"
+                              className="text-[var(--red-icon)] hover:text-red-700 transition p-1"
                             >
-                              ❌
+                              <Trash2 className="w-4 h-4 text-red-500" />
                             </button>
                           </td>
                         </tr>

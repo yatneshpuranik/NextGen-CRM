@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { FileText, Printer, Download } from 'lucide-react';
 import { fetchReport, clearReportsData } from '../store/slices/dashboardSlice';
 import { fetchCustomers } from '../store/slices/customerSlice';
 import { fetchProducts } from '../store/slices/productSlice';
 import type { RootState } from '../store';
 import Toast from '../components/Toast';
+import ExportButton from '../components/ExportButton';
 
 export const ReportsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -30,10 +32,12 @@ export const ReportsPage: React.FC = () => {
 
   // Sync CRM list metadata on mount
   useEffect(() => {
-    dispatch(fetchCustomers() as any);
+    if (user?.role === 'ADMIN' || user?.role === 'SALES' || user?.role === 'ACCOUNTS') {
+      dispatch(fetchCustomers() as any);
+    }
     dispatch(fetchProducts() as any);
     dispatch(clearReportsData());
-  }, [dispatch]);
+  }, [dispatch, user?.role]);
 
   // Handle report selection change, resets parameters
   const handleReportTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -52,28 +56,13 @@ export const ReportsPage: React.FC = () => {
     dispatch(clearReportsData());
   };
 
-  // Check role authorization for current report selection
-  const isAuthorized = (type: string): boolean => {
-    if (!user) return false;
-    const role = user.role;
+  const isAuthorized = (type: string) => {
+    const role = user?.role;
     if (role === 'ADMIN') return true;
-
-    switch (type) {
-      case 'sales':
-        return role === 'SALES' || role === 'ACCOUNTS';
-      case 'inventory':
-        return role === 'WAREHOUSE' || role === 'ACCOUNTS';
-      case 'products':
-        return role === 'WAREHOUSE' || role === 'SALES';
-      case 'customers':
-        return role === 'SALES';
-      case 'stock-movements':
-        return role === 'WAREHOUSE';
-      case 'challans':
-        return true; // All authenticated roles can read challan reports
-      default:
-        return false;
-    }
+    if (role === 'SALES') return ['sales', 'customers', 'challans'].includes(type);
+    if (role === 'WAREHOUSE') return ['inventory', 'products', 'stock-movements'].includes(type);
+    if (role === 'ACCOUNTS') return ['sales', 'inventory', 'customers', 'products', 'challans'].includes(type);
+    return false;
   };
 
   const handleFetchReport = (targetPage: number = 1) => {
@@ -118,75 +107,30 @@ export const ReportsPage: React.FC = () => {
     let headers: string[] = [];
     let rows: string[][] = [];
 
-    // Construct headers and rows based on report types
-    if (reportType === 'sales' || reportType === 'challans') {
-      headers = ['Challan Number', 'Customer', 'Date', 'Status', 'Subtotal', 'Tax', 'Discount', 'Total Amount'];
+    if (reportType === 'sales') {
+      headers = ['Challan #', 'Customer', 'Date', 'Status', 'Total Revenue'];
       rows = records.map((r: any) => [
         r.challanNumber,
         r.customer?.companyName || '',
         new Date(r.challanDate).toLocaleDateString(),
         r.status,
-        Number(r.subtotal).toFixed(2),
-        Number(r.gstAmount).toFixed(2),
-        Number(r.discount).toFixed(2),
-        Number(r.totalAmount).toFixed(2),
+        r.totalAmount
       ]);
     } else if (reportType === 'inventory') {
-      headers = ['Product Name', 'SKU', 'Category', 'Brand', 'Current Stock', 'Min Stock', 'Valuation Cost', 'Warehouse'];
+      headers = ['Product Name', 'SKU', 'Available Stock', 'Reserved Stock', 'Damaged Stock'];
       rows = records.map((r: any) => [
-        r.productName,
-        r.sku,
-        r.category,
-        r.brand,
-        r.currentStock.toString(),
-        r.minimumStock.toString(),
-        Number(r.costValue).toFixed(2),
-        r.warehouseLocation,
-      ]);
-    } else if (reportType === 'products') {
-      headers = ['Code', 'Product Name', 'SKU', 'Category', 'Brand', 'Purchase Price', 'Selling Price', 'Active'];
-      rows = records.map((r: any) => [
-        r.productCode,
-        r.productName,
-        r.sku,
-        r.category,
-        r.brand,
-        Number(r.purchasePrice).toFixed(2),
-        Number(r.sellingPrice).toFixed(2),
-        r.isActive ? 'Active' : 'Inactive',
-      ]);
-    } else if (reportType === 'customers') {
-      headers = ['Code', 'Company Name', 'Contact Person', 'Email', 'Phone', 'City', 'State', 'Orders Count', 'Spends Volume'];
-      rows = records.map((r: any) => [
-        r.customerCode,
-        r.companyName,
-        r.contactPerson,
-        r.email,
-        r.phone,
-        r.city,
-        r.state,
-        r.ordersCount.toString(),
-        Number(r.totalVolume).toFixed(2),
-      ]);
-    } else if (reportType === 'stock-movements') {
-      headers = ['Date', 'Product', 'SKU', 'Type', 'Quantity', 'Prev Stock', 'New Stock', 'Reference', 'Operator'];
-      rows = records.map((r: any) => [
-        new Date(r.createdAt).toLocaleString(),
         r.product?.productName || '',
         r.product?.sku || '',
-        r.transactionType,
-        r.quantity.toString(),
-        r.previousStock.toString(),
-        r.newStock.toString(),
-        r.reference || '',
-        r.createdByUser?.fullName || '',
+        r.availableStock,
+        r.reservedStock,
+        r.damagedStock
       ]);
+    } else {
+      headers = Object.keys(records[0] || {});
+      rows = records.map((r: any) => headers.map((h) => String(r[h] || '')));
     }
 
-    // CSV format conversion
-    const csvContent = 
-      [headers.join(','), ...rows.map(row => row.map(val => `"${val.replace(/"/g, '""')}"`).join(','))].join('\n');
-
+    const csvContent = [headers.join(','), ...rows.map((row) => row.map((val) => `"${val.replace(/"/g, '""')}"`).join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -195,7 +139,6 @@ export const ReportsPage: React.FC = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setToastMsg('CSV report file generated and downloading.');
   };
 
   const handlePrint = () => {
@@ -216,7 +159,8 @@ export const ReportsPage: React.FC = () => {
           <p className="text-sm text-[var(--text-secondary)]">Search, filter, print, and export CSV ledger reports from your workspace databases.</p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <ExportButton module="reports" />
           {reportType === 'inventory' && (
             <button
               onClick={() => {
@@ -225,16 +169,16 @@ export const ReportsPage: React.FC = () => {
                 window.open(`${apiUrl}/pdf/report/inventory?token=${token}`, '_blank');
               }}
               disabled={!hasData}
-              className="btn-secondary-action disabled:opacity-50"
+              className="btn-secondary-action disabled:opacity-50 flex items-center gap-1.5"
             >
-              <span>📄</span> PDF Inventory
+              <FileText className="w-4 h-4 text-red-500" /> PDF Inventory
             </button>
           )}
-          <button onClick={handlePrint} disabled={!hasData} className="btn-secondary-action disabled:opacity-50">
-            <span>🖨️</span> Print Report
+          <button onClick={handlePrint} disabled={!hasData} className="btn-secondary-action disabled:opacity-50 flex items-center gap-1.5">
+            <Printer className="w-4 h-4" /> Print Report
           </button>
-          <button onClick={handleExportCSV} disabled={!hasData} className="btn-primary-action disabled:opacity-50">
-            <span>📥</span> Export CSV Ledger
+          <button onClick={handleExportCSV} disabled={!hasData} className="btn-primary-action disabled:opacity-50 flex items-center gap-1.5">
+            <Download className="w-4 h-4" /> Export CSV Ledger
           </button>
         </div>
       </div>
@@ -250,12 +194,12 @@ export const ReportsPage: React.FC = () => {
               className="w-full text-sm"
             >
               <option value="">-- Choose Audit Report --</option>
-              <option value="sales" disabled={!isAuthorized('sales')}>Sales Revenue Report (Financial)</option>
-              <option value="inventory" disabled={!isAuthorized('inventory')}>Inventory Asset Valuation (Stock)</option>
-              <option value="products" disabled={!isAuthorized('products')}>Products Catalog Spread</option>
-              <option value="customers" disabled={!isAuthorized('customers')}>Customers Volume Growth (CRM)</option>
-              <option value="stock-movements" disabled={!isAuthorized('stock-movements')}>Stock Movements timeline Ledger</option>
-              <option value="challans" disabled={!isAuthorized('challans')}>Delivery Challans Summary</option>
+              {isAuthorized('sales') && <option value="sales">Sales Revenue Report (Financial)</option>}
+              {isAuthorized('inventory') && <option value="inventory">Inventory Asset Valuation (Stock)</option>}
+              {isAuthorized('products') && <option value="products">Products Catalog Spread</option>}
+              {isAuthorized('customers') && <option value="customers">Customers Volume Growth (CRM)</option>}
+              {isAuthorized('stock-movements') && <option value="stock-movements">Stock Movements timeline Ledger</option>}
+              {isAuthorized('challans') && <option value="challans">Delivery Challans Summary</option>}
             </select>
           </div>
 

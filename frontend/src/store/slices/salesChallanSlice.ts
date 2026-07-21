@@ -236,8 +236,18 @@ const salesChallanSlice = createSlice({
       })
       .addCase(fetchSalesChallans.fulfilled, (state, action) => {
         state.loading = false;
-        state.challanList = action.payload.challans;
-        state.pagination = action.payload.pagination;
+        const payloadData = action.payload;
+        if (Array.isArray(payloadData)) {
+          state.challanList = payloadData;
+        } else if (payloadData && Array.isArray(payloadData.challans)) {
+          state.challanList = payloadData.challans;
+          state.pagination = payloadData.pagination || state.pagination;
+        } else if (payloadData && Array.isArray(payloadData.records)) {
+          state.challanList = payloadData.records;
+          state.pagination = payloadData.pagination || state.pagination;
+        } else {
+          state.challanList = [];
+        }
       })
       .addCase(fetchSalesChallans.rejected, (state, action) => {
         state.loading = false;

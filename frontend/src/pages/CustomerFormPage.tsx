@@ -27,11 +27,14 @@ export const CustomerFormPage: React.FC = () => {
   const [backendErrors, setBackendErrors] = useState<{ [key: string]: string }>({});
 
   // Safety Role check: only ADMIN and SALES can access this form page
-  useEffect(() => {
-    if (user && user.role !== 'ADMIN' && user.role !== 'SALES') {
-      navigate('/unauthorized', { replace: true });
-    }
-  }, [user, navigate]);
+  if (user && user.role !== 'ADMIN' && user.role !== 'SALES') {
+    return (
+      <div className="content-card p-12 text-center space-y-3">
+        <p className="text-base font-semibold text-[var(--red-icon)]">Access Restricted</p>
+        <p className="text-xs text-[var(--text-secondary)]">You don't have permission to perform this action.</p>
+      </div>
+    );
+  }
 
   // Fetch details if edit mode
   useEffect(() => {

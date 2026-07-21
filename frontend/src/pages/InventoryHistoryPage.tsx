@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { Plus, Minus, Wrench, HeartCrack, RotateCcw, Boxes } from 'lucide-react';
 import { fetchTransactionHistory, setTransactionPage } from '../store/slices/inventorySlice';
 import type { RootState } from '../store';
 import Loader from '../components/Loader';
@@ -12,7 +13,6 @@ export const InventoryHistoryPage: React.FC = () => {
   const [transactionType, setTransactionType] = useState('');
   const [productId, setProductId] = useState('');
 
-  // Local fetch trigger
   const loadHistory = () => {
     dispatch(fetchTransactionHistory({
       transactionType: transactionType || undefined,
@@ -31,15 +31,15 @@ export const InventoryHistoryPage: React.FC = () => {
   const getTransactionTypeBadge = (type: string) => {
     switch (type) {
       case 'STOCK_IN':
-        return <span className="status-badge confirmed">📥 Stock In</span>;
+        return <span className="status-badge confirmed flex items-center gap-1 inline-flex"><Plus className="w-3 h-3 text-emerald-600" /> Stock In</span>;
       case 'STOCK_OUT':
-        return <span className="status-badge cancelled">📤 Stock Out</span>;
+        return <span className="status-badge cancelled flex items-center gap-1 inline-flex"><Minus className="w-3 h-3 text-red-600" /> Stock Out</span>;
       case 'ADJUSTMENT':
-        return <span className="status-badge draft">🔧 Adjustment</span>;
+        return <span className="status-badge draft flex items-center gap-1 inline-flex"><Wrench className="w-3 h-3 text-amber-600" /> Adjustment</span>;
       case 'DAMAGE':
-        return <span className="status-badge low-stock">⚠️ Damage</span>;
+        return <span className="status-badge low-stock flex items-center gap-1 inline-flex"><HeartCrack className="w-3 h-3 text-red-600" /> Damage</span>;
       case 'RETURN':
-        return <span className="status-badge draft">🔄 Return</span>;
+        return <span className="status-badge draft flex items-center gap-1 inline-flex"><RotateCcw className="w-3 h-3 text-purple-600" /> Return</span>;
       default:
         return <span className="status-badge">{type}</span>;
     }
@@ -54,8 +54,8 @@ export const InventoryHistoryPage: React.FC = () => {
           <p className="text-sm text-[var(--text-secondary)]">Historical record of all inventory stock movements and adjustments.</p>
         </div>
         <div className="flex gap-3">
-          <Link to="/dashboard/inventory" className="btn-primary-action">
-            <span>🏭</span> Inventory Workspace
+          <Link to="/dashboard/inventory" className="btn-primary-action flex items-center gap-1.5">
+            <Boxes className="w-4 h-4" /> Inventory Workspace
           </Link>
         </div>
       </div>

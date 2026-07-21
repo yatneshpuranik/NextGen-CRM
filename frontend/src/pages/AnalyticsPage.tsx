@@ -35,12 +35,22 @@ export const AnalyticsPage: React.FC = () => {
     loading 
   } = useSelector((state: RootState) => state.dashboard);
 
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  const canSeeSales = user?.role === 'ADMIN' || user?.role === 'SALES' || user?.role === 'ACCOUNTS';
+  const canSeeInventory = user?.role === 'ADMIN' || user?.role === 'WAREHOUSE';
+
   useEffect(() => {
     dispatch(fetchSummary() as any);
-    dispatch(fetchSalesOverview() as any);
-    dispatch(fetchInventoryOverview() as any);
-    dispatch(fetchCustomerOverview() as any);
-  }, [dispatch]);
+    const role = user?.role;
+    if (role === 'ADMIN' || role === 'SALES' || role === 'ACCOUNTS') {
+      dispatch(fetchSalesOverview() as any);
+      dispatch(fetchCustomerOverview() as any);
+    }
+    if (role === 'ADMIN' || role === 'WAREHOUSE') {
+      dispatch(fetchInventoryOverview() as any);
+    }
+  }, [dispatch, user?.role]);
 
   if (loading && !salesOverview) {
     return <Loader />;
@@ -68,95 +78,103 @@ export const AnalyticsPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* 1. Monthly Revenue Trend */}
-        <div className="content-card space-y-4">
-          <h3 className="text-base font-semibold text-[var(--text-primary)]">Gross Revenue Cycle (Monthly)</h3>
-          <div className="h-64">
-            {salesOverview?.monthly ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={salesOverview.monthly} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.04)" />
-                  <XAxis dataKey="label" stroke="var(--text-secondary)" fontSize={11} tickLine={false} />
-                  <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'var(--surface-card)', borderRadius: '8px', border: '1px solid var(--border)' }}
-                  />
-                  <Legend verticalAlign="top" height={36} iconType="circle" />
-                  <Line type="monotone" dataKey="revenue" stroke="var(--teal-icon)" strokeWidth={2} name="Sales Value (₹)" activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <Loader />
-            )}
+        {canSeeSales && (
+          <div className="content-card space-y-4">
+            <h3 className="text-base font-semibold text-[var(--text-primary)]">Gross Revenue Cycle (Monthly)</h3>
+            <div className="h-64">
+              {salesOverview?.monthly ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={salesOverview.monthly} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.04)" />
+                    <XAxis dataKey="label" stroke="var(--text-secondary)" fontSize={11} tickLine={false} />
+                    <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'var(--surface-card)', borderRadius: '8px', border: '1px solid var(--border)' }}
+                    />
+                    <Legend verticalAlign="top" height={36} iconType="circle" />
+                    <Line type="monotone" dataKey="revenue" stroke="var(--teal-icon)" strokeWidth={2} name="Sales Value (₹)" activeDot={{ r: 6 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <Loader />
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* 2. Daily Sales Trend */}
-        <div className="content-card space-y-4">
-          <h3 className="text-base font-semibold text-[var(--text-primary)]">Sales Volume Cycle (Daily)</h3>
-          <div className="h-64">
-            {salesOverview?.daily ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={salesOverview.daily} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.04)" />
-                  <XAxis dataKey="label" stroke="var(--text-secondary)" fontSize={11} tickLine={false} />
-                  <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'var(--surface-card)', borderRadius: '8px', border: '1px solid var(--border)' }}
-                  />
-                  <Legend verticalAlign="top" height={36} iconType="circle" />
-                  <Bar dataKey="revenue" fill="var(--purple-icon)" radius={[4, 4, 0, 0]} maxBarSize={30} name="Revenue (₹)" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <Loader />
-            )}
+        {canSeeSales && (
+          <div className="content-card space-y-4">
+            <h3 className="text-base font-semibold text-[var(--text-primary)]">Sales Volume Cycle (Daily)</h3>
+            <div className="h-64">
+              {salesOverview?.daily ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={salesOverview.daily} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.04)" />
+                    <XAxis dataKey="label" stroke="var(--text-secondary)" fontSize={11} tickLine={false} />
+                    <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'var(--surface-card)', borderRadius: '8px', border: '1px solid var(--border)' }}
+                    />
+                    <Legend verticalAlign="top" height={36} iconType="circle" />
+                    <Bar dataKey="revenue" fill="var(--purple-icon)" radius={[4, 4, 0, 0]} maxBarSize={30} name="Revenue (₹)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <Loader />
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* 3. Category Stock Valuation */}
-        <div className="content-card space-y-4">
-          <h3 className="text-base font-semibold text-[var(--text-primary)]">Inventory Valuation Asset Spread by Category</h3>
-          <div className="h-64">
-            {inventoryOverview?.distribution ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={inventoryOverview.distribution} layout="vertical" margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(0,0,0,0.04)" />
-                  <XAxis type="number" stroke="var(--text-secondary)" fontSize={11} tickLine={false} />
-                  <YAxis dataKey="category" type="category" stroke="var(--text-secondary)" fontSize={11} tickLine={false} width={80} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'var(--surface-card)', borderRadius: '8px', border: '1px solid var(--border)' }}
-                  />
-                  <Bar dataKey="valuation" fill="var(--teal-icon)" radius={[0, 4, 4, 0]} maxBarSize={25} name="Asset Value (₹)" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <Loader />
-            )}
+        {canSeeInventory && (
+          <div className="content-card space-y-4">
+            <h3 className="text-base font-semibold text-[var(--text-primary)]">Inventory Valuation Asset Spread by Category</h3>
+            <div className="h-64">
+              {inventoryOverview?.distribution ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={inventoryOverview.distribution} layout="vertical" margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(0,0,0,0.04)" />
+                    <XAxis type="number" stroke="var(--text-secondary)" fontSize={11} tickLine={false} />
+                    <YAxis dataKey="category" type="category" stroke="var(--text-secondary)" fontSize={11} tickLine={false} width={80} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'var(--surface-card)', borderRadius: '8px', border: '1px solid var(--border)' }}
+                    />
+                    <Bar dataKey="valuation" fill="var(--teal-icon)" radius={[0, 4, 4, 0]} maxBarSize={25} name="Asset Value (₹)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <Loader />
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* 4. Customer Growth */}
-        <div className="content-card space-y-4">
-          <h3 className="text-base font-semibold text-[var(--text-primary)]">New Customer Signups Registration Trend</h3>
-          <div className="h-64">
-            {customerOverview?.growthTrend ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={customerOverview.growthTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.04)" />
-                  <XAxis dataKey="label" stroke="var(--text-secondary)" fontSize={11} tickLine={false} />
-                  <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'var(--surface-card)', borderRadius: '8px', border: '1px solid var(--border)' }}
-                  />
-                  <Legend verticalAlign="top" height={36} iconType="circle" />
-                  <Bar dataKey="signups" fill="var(--amber-icon)" radius={[4, 4, 0, 0]} maxBarSize={35} name="Registrations" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <Loader />
-            )}
+        {canSeeSales && (
+          <div className="content-card space-y-4">
+            <h3 className="text-base font-semibold text-[var(--text-primary)]">New Customer Signups Registration Trend</h3>
+            <div className="h-64">
+              {customerOverview?.growthTrend ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={customerOverview.growthTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.04)" />
+                    <XAxis dataKey="label" stroke="var(--text-secondary)" fontSize={11} tickLine={false} />
+                    <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'var(--surface-card)', borderRadius: '8px', border: '1px solid var(--border)' }}
+                    />
+                    <Legend verticalAlign="top" height={36} iconType="circle" />
+                    <Bar dataKey="signups" fill="var(--amber-icon)" radius={[4, 4, 0, 0]} maxBarSize={35} name="Registrations" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <Loader />
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* 5. Challan Status Distribution */}
         <div className="content-card space-y-4 flex flex-col justify-between">
@@ -208,28 +226,30 @@ export const AnalyticsPage: React.FC = () => {
         </div>
 
         {/* 6. Top Spend Customers List */}
-        <div className="content-card space-y-4">
-          <h3 className="text-base font-semibold text-[var(--text-primary)]">Top Customer Accounts Volume Spend</h3>
-          <div className="space-y-4 pt-2">
-            {customerOverview?.topSpenders && customerOverview.topSpenders.length > 0 ? (
-              customerOverview.topSpenders.map((cust) => (
-                <div key={cust.id} className="flex items-center justify-between border-b border-[var(--border)] pb-2 text-xs">
-                  <div>
-                    <span className="font-semibold block text-[var(--text-primary)]">{cust.companyName}</span>
-                    <span className="text-[10px] text-[var(--text-muted)] font-mono">{cust.customerCode}</span>
+        {canSeeSales && (
+          <div className="content-card space-y-4">
+            <h3 className="text-base font-semibold text-[var(--text-primary)]">Top Customer Accounts Volume Spend</h3>
+            <div className="space-y-4 pt-2">
+              {customerOverview?.topSpenders && customerOverview.topSpenders.length > 0 ? (
+                customerOverview.topSpenders.map((cust) => (
+                  <div key={cust.id} className="flex items-center justify-between border-b border-[var(--border)] pb-2 text-xs">
+                    <div>
+                      <span className="font-semibold block text-[var(--text-primary)]">{cust.companyName}</span>
+                      <span className="text-[10px] text-[var(--text-muted)] font-mono">{cust.customerCode}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-semibold text-[var(--teal-text-strong)] text-sm">
+                        ₹{cust.totalSpend.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="font-semibold text-[var(--teal-text-strong)] text-sm">
-                      ₹{cust.totalSpend.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-12 text-xs text-[var(--text-muted)]">No customer logs found.</div>
-            )}
+                ))
+              ) : (
+                <div className="text-center py-12 text-xs text-[var(--text-muted)]">No customer logs found.</div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
       </div>
     </div>

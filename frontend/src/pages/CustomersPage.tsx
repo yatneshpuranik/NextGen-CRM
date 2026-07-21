@@ -11,11 +11,14 @@ import {
   deactivateCustomer,
   resetFilters,
 } from '../store/slices/customerSlice';
+import { Plus, Search, Upload } from 'lucide-react';
 import CustomerTable from '../components/customers/CustomerTable';
 import FilterPanel from '../components/customers/FilterPanel';
 import ConfirmationModal from '../components/ConfirmationModal';
 import Toast from '../components/Toast';
 import Loader from '../components/Loader';
+import ExportButton from '../components/ExportButton';
+import ImportModal from '../components/ImportModal';
 
 export const CustomersPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,7 +29,7 @@ export const CustomersPage: React.FC = () => {
     (state: RootState) => state.customer
   );
 
-  // Modals and Toasts
+  const [showImportModal, setShowImportModal] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; customerId: string | null }>({
     isOpen: false,
@@ -144,22 +147,34 @@ export const CustomersPage: React.FC = () => {
           </p>
         </div>
 
-        {canCreate && (
-          <button
-            type="button"
-            onClick={() => navigate('/dashboard/customers/new')}
-            className="btn-primary-action"
-          >
-            <span>➕</span> Add Customer
-          </button>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          <ExportButton module="customers" />
+          {canCreate && (
+            <>
+              <button
+                type="button"
+                onClick={() => setShowImportModal(true)}
+                className="px-3.5 py-2 text-xs font-semibold rounded-lg border border-[var(--border)] bg-[var(--surface-card)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition flex items-center gap-1.5"
+              >
+                <Upload className="w-4 h-4 text-teal-600" /> Import
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/dashboard/customers/new')}
+                className="btn-primary-action flex items-center gap-1.5"
+              >
+                <Plus className="w-4 h-4" /> Add Customer
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Search and Filters Block */}
       <div className="space-y-4">
         {/* Search Input */}
         <div className="bg-[var(--surface-card)] border border-[var(--border)] rounded-xl p-4 flex items-center">
-          <span className="text-lg mr-3">🔍</span>
+          <Search className="w-5 h-5 text-[var(--text-secondary)] mr-3" />
           <input
             type="text"
             value={searchQuery}
@@ -313,6 +328,14 @@ export const CustomersPage: React.FC = () => {
           onClose={() => setToast(null)}
         />
       )}
+      {/* Import Modal */}
+      <ImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        module="customers"
+        moduleTitle="Customers"
+        onSuccess={() => dispatch(fetchCustomers())}
+      />
     </div>
   );
 };

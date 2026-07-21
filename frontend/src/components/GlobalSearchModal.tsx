@@ -77,10 +77,15 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
 
   if (!isOpen) return null;
 
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  const canSeeCustomers = user?.role === 'ADMIN' || user?.role === 'SALES' || user?.role === 'ACCOUNTS';
+  const canSeeInventory = user?.role === 'ADMIN' || user?.role === 'WAREHOUSE' || user?.role === 'ACCOUNTS';
+
   const totalResults = 
-    searchResults.customers.length + 
+    (canSeeCustomers ? searchResults.customers.length : 0) + 
     searchResults.products.length + 
-    searchResults.inventory.length + 
+    (canSeeInventory ? searchResults.inventory.length : 0) + 
     searchResults.challans.length;
 
   return (
@@ -97,7 +102,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search across customers, products, inventory, challans..."
+            placeholder="Search enterprise assets..."
             className="flex-1 bg-transparent border-0 outline-none text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]"
           />
           <button 
@@ -141,7 +146,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
             <div className="space-y-4">
               
               {/* Customers */}
-              {searchResults.customers.length > 0 && (
+              {canSeeCustomers && searchResults.customers.length > 0 && (
                 <div className="space-y-1">
                   <h5 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-2">Customers</h5>
                   {searchResults.customers.map((c) => (
@@ -175,7 +180,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
               )}
 
               {/* Inventory */}
-              {searchResults.inventory.length > 0 && (
+              {canSeeInventory && searchResults.inventory.length > 0 && (
                 <div className="space-y-1">
                   <h5 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-2">Inventory Stock</h5>
                   {searchResults.inventory.map((i) => (

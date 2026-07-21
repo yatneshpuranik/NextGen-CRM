@@ -1,16 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-  fetchInventory, 
-  setFilters, 
-  resetFilters, 
+import {
+  Upload,
+  BarChart3,
+  AlertTriangle,
+  Eye,
+  Plus,
+  Minus,
+  Wrench,
+  HeartCrack,
+  RotateCcw,
+  X
+} from 'lucide-react';
+import ExportButton from '../components/ExportButton';
+import ImportModal from '../components/ImportModal';
+import {
+  fetchInventory,
+  setFilters,
+  resetFilters,
   setPage,
-  stockIn, 
-  stockOut, 
-  adjustStock, 
-  markDamage, 
-  returnStock 
+  stockIn,
+  stockOut,
+  adjustStock,
+  markDamage,
+  returnStock
 } from '../store/slices/inventorySlice';
 import type { RootState } from '../store';
 import Loader from '../components/Loader';
@@ -31,13 +45,16 @@ export const InventoryPage: React.FC = () => {
   const [reference, setReference] = useState('');
   const [remarks, setRemarks] = useState('');
   const [returnToType, setReturnToType] = useState<'AVAILABLE' | 'DAMAGED'>('AVAILABLE');
-  
+
   const [modalLoading, setModalLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
+  const [showImportModal, setShowImportModal] = useState(false);
+
   // Read only role check
   const isReadOnly = user?.role === 'SALES' || user?.role === 'ACCOUNTS';
+  const canWrite = user?.role === 'ADMIN' || user?.role === 'WAREHOUSE';
 
   useEffect(() => {
     dispatch(fetchInventory() as any);
@@ -159,18 +176,28 @@ export const InventoryPage: React.FC = () => {
           <p className="text-sm text-[var(--text-secondary)]">Single source of truth for tracking, managing, and auditing inventory levels.</p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <ExportButton module="inventory" />
+          {canWrite && (
+            <button
+              type="button"
+              onClick={() => setShowImportModal(true)}
+              className="px-3.5 py-2 text-xs font-semibold rounded-lg border border-[var(--border)] bg-[var(--surface-card)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition flex items-center gap-1.5"
+            >
+              <Upload className="w-4 h-4 text-teal-600" /> Stock Intake
+            </button>
+          )}
           <Link
             to="/dashboard/inventory/dashboard"
-            className="btn-primary-action"
+            className="btn-primary-action flex items-center gap-1.5"
           >
-            <span>📊</span> Analytics Dashboard
+            <BarChart3 className="w-4 h-4" /> Analytics Dashboard
           </Link>
           <Link
             to="/dashboard/inventory/low-stock"
-            className="btn-primary-action bg-white border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]"
+            className="btn-primary-action bg-white border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)] flex items-center gap-1.5"
           >
-            <span>⚠️</span> Low Stock Report
+            <AlertTriangle className="w-4 h-4 text-amber-500" /> Low Stock Report
           </Link>
         </div>
       </div>
@@ -332,53 +359,53 @@ export const InventoryPage: React.FC = () => {
                         {item.warehouseLocation || <span className="text-[var(--text-muted)] italic">Not set</span>}
                       </td>
                       <td className="py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-end gap-1.5">
                           <button
                             onClick={() => navigate(`/dashboard/inventory/${item.productId}`)}
                             title="View activity timeline"
-                            className="px-2 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--surface-hover)] transition"
+                            className="p-1.5 text-xs border border-[var(--border)] rounded hover:bg-[var(--surface-hover)] transition"
                           >
-                            👁️
+                            <Eye className="w-3.5 h-3.5 text-teal-600" />
                           </button>
-                          
+
                           {!isReadOnly && (
                             <>
                               <button
                                 onClick={() => openTransactionModal('in', item)}
                                 title="Stock In Intake"
-                                className="px-2 py-1 text-xs bg-[var(--teal-bg)] border border-[var(--teal-border)] text-[var(--teal-text)] rounded hover:bg-[var(--surface-hover)] transition font-medium"
+                                className="px-2 py-1 text-xs bg-[var(--teal-bg)] border border-[var(--teal-border)] text-[var(--teal-text)] rounded hover:bg-[var(--surface-hover)] transition font-medium flex items-center gap-0.5"
                               >
-                                + In
+                                <Plus className="w-3 h-3" /> In
                               </button>
                               <button
                                 onClick={() => openTransactionModal('out', item)}
                                 disabled={item.availableStock <= 0}
                                 title="Stock Out Dispatch"
-                                className="px-2 py-1 text-xs bg-[var(--red-bg)] border border-[var(--red-icon)] text-[var(--red-text)] rounded hover:bg-[var(--surface-hover)] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+                                className="px-2 py-1 text-xs bg-[var(--red-bg)] border border-[var(--red-icon)] text-[var(--red-text)] rounded hover:bg-[var(--surface-hover)] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-0.5"
                               >
-                                - Out
+                                <Minus className="w-3 h-3" /> Out
                               </button>
                               <button
                                 onClick={() => openTransactionModal('adjust', item)}
                                 title="Adjust Stock Level"
-                                className="px-2 py-1 text-xs bg-[var(--amber-bg)] border border-[var(--amber-icon)] text-[var(--amber-text)] rounded hover:bg-[var(--surface-hover)] transition font-medium"
+                                className="p-1.5 text-xs bg-[var(--amber-bg)] border border-[var(--amber-icon)] text-[var(--amber-text)] rounded hover:bg-[var(--surface-hover)] transition font-medium"
                               >
-                                🔧
+                                <Wrench className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => openTransactionModal('damage', item)}
                                 disabled={item.availableStock <= 0}
                                 title="Mark Damaged Stock"
-                                className="px-2 py-1 text-xs bg-[var(--red-bg)] border border-[var(--red-icon)] text-[var(--red-text)] rounded hover:bg-[var(--surface-hover)] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+                                className="p-1.5 text-xs bg-[var(--red-bg)] border border-[var(--red-icon)] text-[var(--red-text)] rounded hover:bg-[var(--surface-hover)] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium"
                               >
-                                💔
+                                <HeartCrack className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => openTransactionModal('return', item)}
                                 title="Record Returned Stock"
-                                className="px-2 py-1 text-xs bg-[var(--purple-bg)] border border-[var(--purple-icon)] text-[var(--purple-text)] rounded hover:bg-[var(--surface-hover)] transition font-medium"
+                                className="p-1.5 text-xs bg-[var(--purple-bg)] border border-[var(--purple-icon)] text-[var(--purple-text)] rounded hover:bg-[var(--surface-hover)] transition font-medium"
                               >
-                                🔄
+                                <RotateCcw className="w-3.5 h-3.5" />
                               </button>
                             </>
                           )}
@@ -427,19 +454,19 @@ export const InventoryPage: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="content-card w-full max-w-md space-y-4">
             <div className="flex items-center justify-between border-b border-[var(--border)] pb-2">
-              <h3 className="text-base font-semibold text-[var(--text-primary)]">
-                {activeModal === 'in' && '📥 Stock Intake (Stock In)'}
-                {activeModal === 'out' && '📤 Stock Dispatch (Stock Out)'}
-                {activeModal === 'adjust' && '🔧 Stock Adjustment Audit'}
-                {activeModal === 'damage' && '💔 Record Damaged Inventory'}
-                {activeModal === 'return' && '🔄 Record Stock Return'}
+              <h3 className="text-base font-semibold text-[var(--text-primary)] flex items-center gap-2">
+                {activeModal === 'in' && <><Plus className="w-4 h-4 text-emerald-500" /> Stock Intake (Stock In)</>}
+                {activeModal === 'out' && <><Minus className="w-4 h-4 text-red-500" /> Stock Dispatch (Stock Out)</>}
+                {activeModal === 'adjust' && <><Wrench className="w-4 h-4 text-amber-500" /> Stock Adjustment Audit</>}
+                {activeModal === 'damage' && <><HeartCrack className="w-4 h-4 text-red-500" /> Record Damaged Inventory</>}
+                {activeModal === 'return' && <><RotateCcw className="w-4 h-4 text-purple-500" /> Record Stock Return</>}
               </h3>
               <button
                 type="button"
                 onClick={closeTransactionModal}
-                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] text-sm font-semibold"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
@@ -530,6 +557,15 @@ export const InventoryPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Import Modal */}
+      <ImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        module="inventory"
+        moduleTitle="Inventory Stock"
+        onSuccess={() => dispatch(fetchInventory() as any)}
+      />
     </div>
   );
 };

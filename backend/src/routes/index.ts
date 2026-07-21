@@ -17,6 +17,7 @@ import auditRouter from '../modules/audit/audit.routes';
 import notificationRouter from '../modules/notification/notification.routes';
 import warehouseRouter from '../modules/warehouse/warehouse.routes';
 import emailLogRouter from '../modules/email-log/email-log.routes';
+import importExportRouter from '../modules/import-export/import-export.routes';
 
 const router = Router();
 
@@ -36,6 +37,7 @@ router.use('/backup', backupRouter);
 router.use('/search', searchRouter);
 router.use('/warehouses', warehouseRouter);
 router.use('/email-logs', emailLogRouter);
+router.use('/import-export', importExportRouter);
 
 /**
  * @openapi

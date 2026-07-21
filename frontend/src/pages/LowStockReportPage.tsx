@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { AlertTriangle, Printer, Boxes, CheckCircle2 } from 'lucide-react';
 import { fetchInventory, setFilters, resetFilters } from '../store/slices/inventorySlice';
 import type { RootState } from '../store';
 import Loader from '../components/Loader';
@@ -11,7 +12,6 @@ export const LowStockReportPage: React.FC = () => {
   const { inventoryList, loading, error, pagination } = useSelector((state: RootState) => state.inventory);
 
   useEffect(() => {
-    // Reset filters and fetch with lowStock = 'true'
     dispatch(resetFilters());
     dispatch(setFilters({ lowStock: 'true' }));
     dispatch(fetchInventory() as any);
@@ -27,24 +27,24 @@ export const LowStockReportPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
         <div>
           <h2 className="text-2xl font-medium tracking-tight text-[var(--text-primary)] flex items-center gap-2">
-            <span>⚠️</span> Low Stock Alert Report
+            <AlertTriangle className="w-6 h-6 text-amber-500" /> Low Stock Alert Report
           </h2>
           <p className="text-sm text-[var(--text-secondary)]">Products whose available stock levels have reached or dropped below their defined safety threshold.</p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={handlePrint}
-            className="btn-primary-action bg-white border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]"
+            className="btn-primary-action bg-white border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)] flex items-center gap-1.5"
           >
-            <span>🖨️</span> Print Report
+            <Printer className="w-4 h-4" /> Print Report
           </button>
-          <Link to="/dashboard/inventory" className="btn-primary-action">
-            <span>🏭</span> Inventory Workspace
+          <Link to="/dashboard/inventory" className="btn-primary-action flex items-center gap-1.5">
+            <Boxes className="w-4 h-4" /> Inventory Workspace
           </Link>
         </div>
       </div>
 
-      {/* Printable Heading (Only visible during print) */}
+      {/* Printable Heading */}
       <div className="hidden print:block border-b-2 border-black pb-4 mb-6">
         <h1 className="text-2xl font-bold text-black">NextGen ERP - Inventory Management</h1>
         <h2 className="text-lg text-gray-700">Low Stock & Safety Level Report</h2>
@@ -139,7 +139,6 @@ export const LowStockReportPage: React.FC = () => {
                 </button>
                 <button
                   onClick={() => {
-                    // Handled automatically by redux pagination
                   }}
                   disabled={pagination.page === pagination.totalPages}
                   className="px-3 py-1.5 border border-[var(--border)] rounded-lg text-xs font-medium hover:bg-[var(--surface-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition"
@@ -150,8 +149,9 @@ export const LowStockReportPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="text-center py-8 text-[var(--text-muted)] text-sm">
-            🎉 Excellent! No products are currently below safety stock levels.
+          <div className="text-center py-8 text-[var(--text-muted)] text-sm flex items-center justify-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+            <span>Excellent! No products are currently below safety stock levels.</span>
           </div>
         )}
       </div>

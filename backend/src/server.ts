@@ -1,6 +1,7 @@
 import app from './app';
 import { logger } from './config/logger';
 import { prisma } from './config/db';
+import { hashPassword } from './utils/password';
 import { Server } from 'http';
 
 const PORT = process.env.PORT || 5000;
@@ -11,6 +12,36 @@ const startServer = async (): Promise<void> => {
     logger.info('Attempting database connection...');
     await prisma.$connect();
     logger.info('✅ Database Connected Successfully');
+
+    // Ensure Hardcoded Admin Account exists
+    const adminEmail = 'nextgen@admin.com';
+    const adminPassword = await hashPassword('112233nextgen');
+    const existingAdmin = await prisma.user.findUnique({
+      where: { email: adminEmail }
+    });
+
+    if (!existingAdmin) {
+      await prisma.user.create({
+        data: {
+          fullName: 'NextGen Admin',
+          email: adminEmail,
+          password: adminPassword,
+          role: 'ADMIN',
+          isActive: true
+        }
+      });
+      logger.info(`Created default admin account: ${adminEmail}`);
+    } else {
+      await prisma.user.update({
+        where: { email: adminEmail },
+        data: {
+          password: adminPassword,
+          role: 'ADMIN',
+          isActive: true
+        }
+      });
+      logger.info(`Updated admin account credentials: ${adminEmail}`);
+    }
 
     // Ensure Default Warehouse exists and associate legacy inventory records
     let defaultWarehouse = await prisma.warehouse.findUnique({

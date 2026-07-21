@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
+import { MapPin, User, ArrowLeft, Pencil, Package, FileText } from 'lucide-react';
 import type { RootState, AppDispatch } from '../store';
 import { fetchWarehouseDetails, fetchWarehouseStock, fetchWarehouseHistory } from '../store/slices/warehouseSlice';
 import Loader from '../components/Loader';
@@ -37,21 +38,25 @@ export const WarehouseDetailsPage: React.FC = () => {
             </span>
             <h2 className="text-2xl font-medium tracking-tight text-[var(--text-primary)]">{currentWarehouse.name}</h2>
           </div>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">📍 {currentWarehouse.address} | Contact: {currentWarehouse.contactPerson} ({currentWarehouse.contactNumber})</p>
+          <p className="text-sm text-[var(--text-secondary)] mt-1 flex items-center gap-2">
+            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-[var(--text-muted)]" /> {currentWarehouse.address}</span>
+            <span>|</span>
+            <span className="flex items-center gap-1"><User className="w-3.5 h-3.5 text-[var(--text-muted)]" /> Contact: {currentWarehouse.contactPerson} ({currentWarehouse.contactNumber})</span>
+          </p>
         </div>
 
         <div className="flex gap-2">
           <button
             onClick={() => navigate('/dashboard/warehouses')}
-            className="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-[var(--surface-hover)]"
+            className="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-[var(--surface-hover)] flex items-center gap-1.5"
           >
-            ← Back to Warehouses
+            <ArrowLeft className="w-4 h-4" /> Back to Warehouses
           </button>
           <button
             onClick={() => navigate(`/dashboard/warehouses/${id}/edit`)}
-            className="px-4 py-2 bg-[var(--teal-bg)] border border-[var(--teal-border)] text-[var(--teal-text-strong)] font-semibold text-xs rounded-lg hover:bg-[var(--surface-hover)]"
+            className="px-4 py-2 bg-[var(--teal-bg)] border border-[var(--teal-border)] text-[var(--teal-text-strong)] font-semibold text-xs rounded-lg hover:bg-[var(--surface-hover)] flex items-center gap-1.5"
           >
-            ✏️ Edit Warehouse
+            <Pencil className="w-4 h-4 text-amber-500" /> Edit Warehouse
           </button>
         </div>
       </div>
@@ -60,19 +65,19 @@ export const WarehouseDetailsPage: React.FC = () => {
       <div className="flex border-b border-[var(--border)] gap-6">
         <button
           onClick={() => setActiveTab('STOCK')}
-          className={`pb-3 text-xs font-semibold ${
+          className={`pb-3 text-xs font-semibold flex items-center gap-1.5 ${
             activeTab === 'STOCK' ? 'border-b-2 border-[var(--teal-icon)] text-[var(--teal-text-strong)]' : 'text-[var(--text-secondary)]'
           }`}
         >
-          📦 Local Warehouse Stock ({warehouseStock.length})
+          <Package className="w-4 h-4" /> Local Warehouse Stock ({warehouseStock.length})
         </button>
         <button
           onClick={() => setActiveTab('HISTORY')}
-          className={`pb-3 text-xs font-semibold ${
+          className={`pb-3 text-xs font-semibold flex items-center gap-1.5 ${
             activeTab === 'HISTORY' ? 'border-b-2 border-[var(--teal-icon)] text-[var(--teal-text-strong)]' : 'text-[var(--text-secondary)]'
           }`}
         >
-          📜 Transaction History ({historyPagination?.totalRecords || 0})
+          <FileText className="w-4 h-4" /> Transaction History ({historyPagination?.totalRecords || 0})
         </button>
       </div>
 

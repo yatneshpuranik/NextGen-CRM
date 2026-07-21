@@ -110,3 +110,5 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     </div>
   );
 };
+
+export default FilterPanel;

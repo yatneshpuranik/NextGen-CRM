@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Pencil, Trash2, Package, AlertTriangle } from 'lucide-react';
 import type { AppDispatch, RootState } from '../store';
 import {
   fetchProductById,
@@ -75,7 +76,7 @@ export const ProductDetailsPage: React.FC = () => {
   if (error || !singleProduct) {
     return (
       <div className="content-card py-16 text-center space-y-4">
-        <p className="text-[var(--red-icon)] font-medium">⚠️ Error loading product records</p>
+        <p className="text-[var(--red-icon)] font-medium flex items-center justify-center gap-1.5"><AlertTriangle className="w-5 h-5 text-red-500" /> Error loading product records</p>
         <p className="text-sm text-[var(--text-secondary)]">{error || 'Product profile not found.'}</p>
         <button
           type="button"
@@ -132,7 +133,7 @@ export const ProductDetailsPage: React.FC = () => {
                 onClick={() => navigate(`/dashboard/products/${singleProduct.id}/edit`)}
                 className="px-4 py-2 border border-[var(--teal-border)] bg-[var(--teal-bg)] text-[var(--teal-text-strong)] rounded-lg text-sm font-medium hover:bg-[var(--surface-hover)] transition flex items-center gap-2"
               >
-                <span>✏️</span> Edit Specs
+                <Pencil className="w-4 h-4 text-amber-500" /> Edit Specs
               </button>
               <button
                 type="button"
@@ -154,7 +155,7 @@ export const ProductDetailsPage: React.FC = () => {
               onClick={() => setDeleteModal(true)}
               className="px-4 py-2 border border-[var(--red-icon)] bg-[var(--red-bg)] text-[var(--red-text-strong)] rounded-lg text-sm font-medium hover:bg-[var(--surface-hover)] transition flex items-center gap-2"
             >
-              <span>🗑️</span> Archive
+              <Trash2 className="w-4 h-4 text-red-500" /> Archive
             </button>
           )}
         </div>
@@ -262,8 +263,8 @@ export const ProductDetailsPage: React.FC = () => {
                 className="w-full h-auto rounded-lg object-cover border border-[var(--border)] max-h-48 shadow-sm"
               />
             ) : (
-              <div className="space-y-2">
-                <span className="text-5xl block">📦</span>
+              <div className="space-y-2 flex flex-col items-center">
+                <Package className="w-12 h-12 text-[var(--text-muted)]" />
                 <span className="text-xs text-[var(--text-secondary)] font-medium">No Image Uploaded</span>
               </div>
             )}

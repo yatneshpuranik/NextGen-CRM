@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { AlertTriangle } from 'lucide-react';
 import type { AppDispatch, RootState } from '../store';
 import {
   createProduct,
@@ -27,11 +28,14 @@ export const ProductFormPage: React.FC = () => {
   const [backendErrors, setBackendErrors] = useState<{ [key: string]: string }>({});
 
   // Safety Role check: only ADMIN and WAREHOUSE can access this form page
-  useEffect(() => {
-    if (user && user.role !== 'ADMIN' && user.role !== 'WAREHOUSE') {
-      navigate('/unauthorized', { replace: true });
-    }
-  }, [user, navigate]);
+  if (user && user.role !== 'ADMIN' && user.role !== 'WAREHOUSE') {
+    return (
+      <div className="content-card p-12 text-center space-y-3">
+        <p className="text-base font-semibold text-[var(--red-icon)]">Access Restricted</p>
+        <p className="text-xs text-[var(--text-secondary)]">You don't have permission to perform this action.</p>
+      </div>
+    );
+  }
 
   // Fetch details if edit mode
   useEffect(() => {
@@ -91,7 +95,7 @@ export const ProductFormPage: React.FC = () => {
   if (isEditMode && error && !singleProduct) {
     return (
       <div className="content-card py-16 text-center space-y-4">
-        <p className="text-[var(--red-icon)] font-medium">⚠️ Error loading product records</p>
+        <p className="text-[var(--red-icon)] font-medium flex items-center justify-center gap-1.5"><AlertTriangle className="w-5 h-5 text-red-500" /> Error loading product records</p>
         <p className="text-sm text-[var(--text-secondary)]">{error}</p>
         <button
           type="button"

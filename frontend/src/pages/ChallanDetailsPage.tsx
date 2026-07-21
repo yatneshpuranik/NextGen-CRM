@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { FileDown, FileText, Pencil, Rocket, Trash2, CheckCircle2, CircleX } from 'lucide-react';
 import { 
   fetchSalesChallanById, 
   confirmSalesChallan, 
@@ -161,36 +162,36 @@ export const ChallanDetailsPage: React.FC = () => {
           </Link>
           
           {/* PDF Downloads */}
-          <button onClick={() => downloadPdf('challan')} className="btn-secondary-action">
-            📄 PDF Challan
+          <button onClick={() => downloadPdf('challan')} className="btn-secondary-action flex items-center gap-1.5">
+            <FileDown className="w-4 h-4 text-red-500" /> PDF Challan
           </button>
           {(isConfirmed || isCompleted) && (
-            <button onClick={() => downloadPdf('invoice')} className="btn-secondary-action">
-              🧾 PDF Invoice
+            <button onClick={() => downloadPdf('invoice')} className="btn-secondary-action flex items-center gap-1.5">
+              <FileText className="w-4 h-4 text-blue-500" /> PDF Invoice
             </button>
           )}
           
           {!isReadOnly && isDraft && (
             <>
-              <Link to={`/dashboard/sales-challans/${singleChallan.id}/edit`} className="btn-primary-action">
-                Edit Draft
+              <Link to={`/dashboard/sales-challans/${singleChallan.id}/edit`} className="btn-primary-action flex items-center gap-1.5">
+                <Pencil className="w-4 h-4" /> Edit Draft
               </Link>
-              <button onClick={() => triggerModal('confirm')} className="btn-primary-action">
-                🚀 Confirm & Dispatch
+              <button onClick={() => triggerModal('confirm')} className="btn-primary-action flex items-center gap-1.5">
+                <Rocket className="w-4 h-4 text-emerald-400" /> Confirm & Dispatch
               </button>
-              <button onClick={() => triggerModal('delete')} className="btn-danger-action">
-                Delete Draft
+              <button onClick={() => triggerModal('delete')} className="btn-danger-action flex items-center gap-1.5">
+                <Trash2 className="w-4 h-4" /> Delete Draft
               </button>
             </>
           )}
 
           {!isReadOnly && isConfirmed && (
             <>
-              <button onClick={() => triggerModal('complete')} className="btn-primary-action">
-                ✔️ Mark Completed
+              <button onClick={() => triggerModal('complete')} className="btn-primary-action flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Mark Completed
               </button>
-              <button onClick={() => triggerModal('cancel')} className="btn-danger-action">
-                Cancel Shipment
+              <button onClick={() => triggerModal('cancel')} className="btn-danger-action flex items-center gap-1.5">
+                <CircleX className="w-4 h-4" /> Cancel Shipment
               </button>
             </>
           )}

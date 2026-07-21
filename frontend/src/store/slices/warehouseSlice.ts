@@ -51,7 +51,7 @@ export const fetchWarehouses = createAsyncThunk<any, { search?: string; status?:
   async (params, { rejectWithValue }) => {
     try {
       const res = await api.get('/warehouses', { params });
-      return res.data;
+      return res.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch warehouses');
     }
@@ -155,8 +155,17 @@ const warehouseSlice = createSlice({
       })
       .addCase(fetchWarehouses.fulfilled, (state, action) => {
         state.loading = false;
-        state.warehouses = action.payload.data;
-        state.pagination = action.payload.pagination;
+        const payloadData = action.payload;
+        if (Array.isArray(payloadData)) {
+          state.warehouses = payloadData;
+          state.pagination = null;
+        } else if (payloadData && Array.isArray(payloadData.records)) {
+          state.warehouses = payloadData.records;
+          state.pagination = payloadData.pagination || null;
+        } else {
+          state.warehouses = [];
+          state.pagination = null;
+        }
       })
       .addCase(fetchWarehouses.rejected, (state, action) => {
         state.loading = false;

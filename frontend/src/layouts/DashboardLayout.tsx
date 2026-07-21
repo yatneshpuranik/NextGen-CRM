@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import {
+  LayoutDashboard,
+  Users,
+  Package,
+  Boxes,
+  Warehouse,
+  FileText,
+  BarChart3,
+  FileSpreadsheet,
+  ShieldCheck,
+  DatabaseBackup,
+  Settings,
+  Mail,
+  LogOut,
+  Search
+} from 'lucide-react';
 import { logout } from '../store/slices/authSlice';
 import type { RootState } from '../store';
 import api from '../utils/api';
@@ -22,10 +38,8 @@ export const DashboardLayout: React.FC = () => {
     }
   };
 
-  // Keyboard Shortcuts Hook
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore shortcut triggering if typing inside input or textarea elements
       const target = e.target as HTMLElement;
       const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
 
@@ -60,6 +74,7 @@ export const DashboardLayout: React.FC = () => {
   }, [navigate]);
 
   const isAdmin = user?.role === 'ADMIN';
+  const canSee = (roles: string[]) => !!user?.role && roles.includes(user.role);
 
   return (
     <div className="flex min-h-screen bg-[var(--surface-page)]">
@@ -70,7 +85,7 @@ export const DashboardLayout: React.FC = () => {
       <aside className="sidebar w-64 fixed top-0 left-0 bottom-0 p-4 space-y-6 flex flex-col z-35">
         <div className="px-3 py-4">
           <h1 className="text-xl font-medium tracking-tight text-[var(--teal-text-strong)] flex items-center gap-2">
-            <span>🚀</span> NextGen ERP
+            <LayoutDashboard className="w-5 h-5 text-teal-600" /> NextGen ERP
           </h1>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5 font-medium">Core Enterprise Workspace</p>
         </div>
@@ -81,49 +96,55 @@ export const DashboardLayout: React.FC = () => {
             end
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
-            <span>📊</span> Dashboard
+            <LayoutDashboard className="w-5 h-5" /> Dashboard
           </NavLink>
-          <NavLink
-            to="/dashboard/customers"
-            className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
-          >
-            <span>👥</span> Customers
-          </NavLink>
+          {canSee(['ADMIN', 'SALES', 'ACCOUNTS']) && (
+            <NavLink
+              to="/dashboard/customers"
+              className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+            >
+              <Users className="w-5 h-5" /> Customers
+            </NavLink>
+          )}
           <NavLink
             to="/dashboard/products"
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
-            <span>📦</span> Products
+            <Package className="w-5 h-5" /> Products
           </NavLink>
-          <NavLink
-            to="/dashboard/inventory"
-            className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
-          >
-            <span>🏭</span> Inventory
-          </NavLink>
-          <NavLink
-            to="/dashboard/warehouses"
-            className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
-          >
-            <span>🏙️</span> Warehouses
-          </NavLink>
+          {canSee(['ADMIN', 'WAREHOUSE', 'ACCOUNTS']) && (
+            <NavLink
+              to="/dashboard/inventory"
+              className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+            >
+              <Boxes className="w-5 h-5" /> Inventory
+            </NavLink>
+          )}
+          {canSee(['ADMIN', 'WAREHOUSE']) && (
+            <NavLink
+              to="/dashboard/warehouses"
+              className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+            >
+              <Warehouse className="w-5 h-5" /> Warehouses
+            </NavLink>
+          )}
           <NavLink
             to="/dashboard/sales-challans"
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
-            <span>📜</span> Delivery Challans
+            <FileText className="w-5 h-5" /> Delivery Challans
           </NavLink>
           <NavLink
             to="/dashboard/analytics"
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
-            <span>📈</span> Analytics
+            <BarChart3 className="w-5 h-5" /> Analytics
           </NavLink>
           <NavLink
             to="/dashboard/reports"
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
-            <span>📋</span> Reports
+            <FileSpreadsheet className="w-5 h-5" /> Reports
           </NavLink>
 
           {/* Admin Restricted Paths */}
@@ -134,25 +155,25 @@ export const DashboardLayout: React.FC = () => {
                 to="/dashboard/audit-logs"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
-                <span>🕵️‍♂️</span> Audit Trails
+                <ShieldCheck className="w-5 h-5" /> Audit Trails
               </NavLink>
               <NavLink
                 to="/dashboard/backup-restore"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
-                <span>💾</span> Backup & Export
+                <DatabaseBackup className="w-5 h-5" /> Backup & Export
               </NavLink>
               <NavLink
                 to="/dashboard/settings"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
-                <span>⚙️</span> Settings
+                <Settings className="w-5 h-5" /> Settings
               </NavLink>
               <NavLink
                 to="/dashboard/email-logs"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
-                <span>✉️</span> Email Logs
+                <Mail className="w-5 h-5" /> Email Logs
               </NavLink>
             </div>
           )}
@@ -163,7 +184,7 @@ export const DashboardLayout: React.FC = () => {
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--red-icon)] bg-[var(--red-bg)] hover:bg-[var(--surface-hover)] transition-colors rounded-lg font-medium"
           >
-            <span>🚪</span> Sign Out
+            <LogOut className="w-5 h-5" /> Sign Out
           </button>
         </div>
       </aside>
@@ -176,7 +197,7 @@ export const DashboardLayout: React.FC = () => {
             onClick={() => setShowSearch(true)} 
             className="flex items-center gap-2 px-3 py-1.5 border border-[var(--border)] bg-[var(--surface-page)] hover:bg-[var(--surface-hover)] rounded-lg text-xs text-[var(--text-secondary)] transition-colors min-w-[200px]"
           >
-            <span>🔍</span> Search...
+            <Search className="w-4 h-4 text-[var(--text-muted)]" /> Search...
             <kbd className="ml-auto text-[10px] px-1.5 py-0.5 bg-[var(--surface-card)] border border-[var(--border)] rounded-md font-mono">Ctrl+K</kbd>
           </button>
 

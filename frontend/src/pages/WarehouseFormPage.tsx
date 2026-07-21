@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import type { RootState, AppDispatch } from '../store';
 import { createWarehouse, updateWarehouse, fetchWarehouseDetails } from '../store/slices/warehouseSlice';
 
@@ -11,6 +12,16 @@ export const WarehouseFormPage: React.FC = () => {
   const navigate = useNavigate();
 
   const { currentWarehouse } = useSelector((state: RootState) => state.warehouse);
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  if (user && user.role !== 'ADMIN' && user.role !== 'WAREHOUSE') {
+    return (
+      <div className="content-card p-12 text-center space-y-3">
+        <p className="text-base font-semibold text-[var(--red-icon)]">Access Restricted</p>
+        <p className="text-xs text-[var(--text-secondary)]">You don't have permission to perform this action.</p>
+      </div>
+    );
+  }
 
   const [formData, setFormData] = useState({
     code: '',
@@ -77,9 +88,9 @@ export const WarehouseFormPage: React.FC = () => {
         </div>
         <button
           onClick={() => navigate('/dashboard/warehouses')}
-          className="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-[var(--surface-hover)]"
+          className="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-[var(--surface-hover)] flex items-center gap-1.5"
         >
-          ← Back
+          <ArrowLeft className="w-4 h-4" /> Back
         </button>
       </div>
 

@@ -44,6 +44,7 @@ model User {
   salesChallans     SalesChallan[]
   auditLogs         AuditLog[]
   notifications     Notification[]
+  transfers         StockTransfer[]
 
   @@index([email])
 }
@@ -98,8 +99,9 @@ model Product {
   createdBy         String?            @db.Uuid
   createdByUser     User?              @relation(fields: [createdBy], references: [id], onDelete: SetNull)
   challanItems      SalesChallanItem[]
-  inventory         Inventory?
+  inventories       Inventory[]
   stockTransactions StockTransaction[]
+  transfers         StockTransfer[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 
@@ -113,6 +115,8 @@ model SalesChallan {
   challanNumber String             @unique @db.VarChar(50)
   customerId    String             @db.Uuid
   customer      Customer           @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  warehouseId   String?            @db.Uuid
+  warehouse     Warehouse?         @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
   challanDate   DateTime           @default(now())
   deliveryDate  DateTime?
   status        ChallanStatus      @default(DRAFT)
@@ -130,6 +134,7 @@ model SalesChallan {
 
   @@index([customerId])
   @@index([challanNumber])
+  @@index([warehouseId])
 }
 
 model SalesChallanItem {
@@ -167,8 +172,10 @@ model Invoice {
 
 model Inventory {
   id                String             @id @default(uuid()) @db.Uuid
-  productId         String             @unique @db.Uuid
+  productId         String             @db.Uuid
   product           Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouseId       String?            @db.Uuid
+  warehouse         Warehouse?         @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
   availableStock    Int                @default(0)
   reservedStock     Int                @default(0)
   damagedStock      Int                @default(0)
@@ -180,7 +187,9 @@ model Inventory {
   updatedAt         DateTime           @updatedAt
   transactions      StockTransaction[]
 
+  @@unique([productId, warehouseId])
   @@index([productId])
+  @@index([warehouseId])
 }
 
 model StockTransaction {
@@ -189,6 +198,8 @@ model StockTransaction {
   product         Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
   inventoryId     String          @db.Uuid
   inventory       Inventory       @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  warehouseId     String?         @db.Uuid
+  warehouse       Warehouse?      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
   transactionType TransactionType
   quantity        Int
   previousStock   Int
@@ -201,6 +212,7 @@ model StockTransaction {
 
   @@index([productId])
   @@index([inventoryId])
+  @@index([warehouseId])
 }
 
 model AuditLog {
@@ -251,4 +263,52 @@ model CompanySettings {
   language      String   @db.VarChar(10) @default("en")
   theme         String   @db.VarChar(20) @default("light")
   updatedAt     DateTime @updatedAt
+}
+
+model Warehouse {
+  id            String             @id @default(uuid()) @db.Uuid
+  name          String             @db.VarChar(100)
+  code          String             @unique @db.VarChar(20)
+  address       String             @db.Text
+  contactPerson String             @db.VarChar(100)
+  contactNumber String             @db.VarChar(20)
+  status        String             @db.VarChar(20) @default("ACTIVE")
+  inventories   Inventory[]
+  transactions  StockTransaction[]
+  challans      SalesChallan[]
+  transfersFrom StockTransfer[]    @relation("SourceWarehouse")
+  transfersTo   StockTransfer[]    @relation("DestWarehouse")
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}
+
+model StockTransfer {
+  id                String             @id @default(uuid()) @db.Uuid
+  transferNumber    String             @unique @db.VarChar(50)
+  sourceWarehouseId String             @db.Uuid
+  sourceWarehouse   Warehouse          @relation("SourceWarehouse", fields: [sourceWarehouseId], references: [id], onDelete: Restrict)
+  destWarehouseId   String             @db.Uuid
+  destWarehouse     Warehouse          @relation("DestWarehouse", fields: [destWarehouseId], references: [id], onDelete: Restrict)
+  productId         String             @db.Uuid
+  product           Product            @relation(fields: [productId], references: [id], onDelete: Restrict)
+  quantity          Int
+  remarks           String?            @db.Text
+  status            String             @db.VarChar(20) @default("COMPLETED")
+  createdBy         String?            @db.Uuid
+  createdByUser     User?              @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([sourceWarehouseId])
+  @@index([destWarehouseId])
+  @@index([productId])
+}
+
+model EmailLog {
+  id            String   @id @default(uuid()) @db.Uuid
+  recipient     String   @db.VarChar(255)
+  subject       String   @db.VarChar(255)
+  status        String   @db.VarChar(20)
+  failureReason String?  @db.Text
+  sentTime      DateTime @default(now())
 }

@@ -114,10 +114,36 @@ const controller = new AuthController();
  *       409:
  *         description: Conflict. User email is already registered.
  */
+import { prisma } from '../../config/db';
+
+const bootstrapAuth = async (req: any, res: any, next: any) => {
+  try {
+    const userCount = await prisma.user.count();
+    if (userCount === 0) {
+      return next();
+    }
+    await authenticateJWT(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const bootstrapRole = async (req: any, res: any, next: any) => {
+  try {
+    const userCount = await prisma.user.count();
+    if (userCount === 0) {
+      return next();
+    }
+    authorizeRoles('ADMIN')(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+};
+
 router.post(
   '/register',
-  authenticateJWT,
-  authorizeRoles('ADMIN'),
+  bootstrapAuth,
+  bootstrapRole,
   registerValidator,
   validateRequest,
   controller.register

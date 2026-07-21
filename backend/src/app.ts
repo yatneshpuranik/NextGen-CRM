@@ -44,6 +44,18 @@ app.use(express.urlencoded({ extended: true }));
 
 // Swagger UI Documentation Endpoint
 app.use(['/api-docs', '/crm/api'], swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Root Health Route
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    application: "NextGen ERP + CRM API",
+    status: "Running",
+    version: "1.0.0",
+    swagger: "/crm/api",
+    api: "/crm/v1",
+    documentation: `${req.protocol}://${req.get("host")}/crm/api`
+  });
+});
 
 // Mount REST API Routers
 app.use('/crm/v1', v1Routes);

@@ -111,16 +111,5 @@ process.on('uncaughtException', (error: Error) => {
   process.exit(1);
 });
 
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    application: "NextGen ERP + CRM API",
-    status: "Running",
-    version: "1.0.0",
-    swagger: "/crm/api",
-    api: "/crm/v1",
-    documentation: `${req.protocol}://${req.get("host")}/crm/api`,
-  });
-});
 
 startServer();

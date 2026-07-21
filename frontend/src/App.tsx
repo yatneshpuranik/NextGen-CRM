@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from './store';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Import newly created pages
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
@@ -118,10 +118,10 @@ function App() {
           <Route path="email-logs" element={<RoleGuard allowedRoles={['ADMIN']}><EmailLogsPage /></RoleGuard>} />
         </Route>
 
-        {/* Catch all and route to dashboard or login */}
+        {/* Root landing page */}
         <Route
           path="/"
-          element={<Navigate to="/dashboard" replace />}
+          element={<LandingPage />}
         />
         <Route
           path="*"

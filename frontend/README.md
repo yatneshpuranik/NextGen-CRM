@@ -1,32 +1,49 @@
-# React + TypeScript + Vite
+# NextGen ERP + CRM — Frontend Client UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+[![Production Application](https://img.shields.io/badge/Production-Live-emerald?style=for-the-badge)](https://crm.yatneshpuranik.online)
 
-Currently, two official plugins are available:
+The frontend client for NextGen ERP + CRM, built with React 18, Vite, TypeScript, Redux Toolkit, React Router v6, and TailwindCSS.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🌐 Production URL
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Production Client App:** [`https://crm.yatneshpuranik.online`](https://crm.yatneshpuranik.online)
+- **Backend API:** [`https://api.yatneshpuranik.online`](https://api.yatneshpuranik.online)
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## 🛠️ Technology Stack
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+- **Framework:** React 18 (Vite bundler)
+- **Language:** TypeScript
+- **State Management:** Redux Toolkit (Slices & Async Thunks)
+- **Routing:** React Router Dom v6 (Protected routes & RBAC guards)
+- **HTTP Client:** Axios (Interceptors for Bearer token & 401 handling)
+- **Styling:** Custom CSS Tokens + TailwindCSS
+- **Icons:** Lucide React
+
+---
+
+## ⚙️ Environment Variables
+
+Create `.env` inside `frontend/`:
+
+```env
+VITE_API_URL=https://api.yatneshpuranik.online
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+---
+
+## 🚀 Development Commands
+
+```bash
+# Install dependencies
+npm install
+
+# Run local development server
+npm run dev
+
+# Run production build & typecheck
+npm run build
+```

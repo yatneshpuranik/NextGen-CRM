@@ -12,7 +12,7 @@ export const BackupRestorePage: React.FC = () => {
   const [pendingBackupData, setPendingBackupData] = useState<any>(null);
 
   const getAuthToken = () => localStorage.getItem('token') || '';
-  const getApiUrl = () => import.meta.env.VITE_API_URL || 'http://localhost:5000/crm/v1';
+  const getApiUrl = () => import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const triggerJsonExport = () => {
     window.open(`${getApiUrl()}/backup/export?token=${getAuthToken()}`, '_blank');
@@ -107,17 +107,17 @@ export const BackupRestorePage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
+
         {/* Backup Operations */}
         <div className="content-card space-y-4">
           <h3 className="text-lg font-medium text-[var(--text-primary)] border-b border-[var(--border)] pb-2">JSON Backup & Restore</h3>
-          
+
           <div className="space-y-4 text-xs">
             <p className="text-[var(--text-secondary)] leading-relaxed">
               Export the entire relational database (tables: users, products, stock ledgers, CRM databases, delivery details) as a consolidated JSON payload. Keep this file secure as it contains all transactional history.
             </p>
-            
-            <button 
+
+            <button
               onClick={triggerJsonExport}
               className="w-full py-2.5 bg-[var(--teal-bg)] border border-[var(--teal-border)] text-[var(--teal-text)] font-semibold rounded-lg hover:bg-[var(--surface-hover)] transition-colors flex items-center justify-center gap-2"
             >
@@ -129,15 +129,15 @@ export const BackupRestorePage: React.FC = () => {
               <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
                 Upload a previously exported JSON backup file to overwrite current database state.
               </p>
-              
-              <input 
-                type="file" 
-                id="restoreUpload" 
-                accept="application/json" 
+
+              <input
+                type="file"
+                id="restoreUpload"
+                accept="application/json"
                 onChange={handleFileChange}
-                className="hidden" 
+                className="hidden"
               />
-              <label 
+              <label
                 htmlFor="restoreUpload"
                 className="inline-flex items-center justify-center gap-2 w-full py-2.5 border border-[var(--red-icon)] bg-[var(--red-bg)] text-[var(--red-text)] font-semibold rounded-lg cursor-pointer hover:bg-[var(--surface-hover)] transition-colors text-center"
               >
@@ -150,32 +150,32 @@ export const BackupRestorePage: React.FC = () => {
         {/* CSV Ledger Exports */}
         <div className="content-card space-y-4">
           <h3 className="text-lg font-medium text-[var(--text-primary)] border-b border-[var(--border)] pb-2">CSV Ledger Tables Export</h3>
-          
+
           <div className="space-y-4 text-xs">
             <p className="text-[var(--text-secondary)] leading-relaxed">
               Download clean spreadsheet-compatible CSV tables for localized accounting integrations or dashboard auditing reports.
             </p>
 
             <div className="grid grid-cols-2 gap-3">
-              <button 
+              <button
                 onClick={() => triggerCsvExport('customers')}
                 className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold flex items-center justify-center gap-1.5"
               >
                 <Users className="w-4 h-4 text-purple-600" /> Customers CSV
               </button>
-              <button 
+              <button
                 onClick={() => triggerCsvExport('products')}
                 className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold flex items-center justify-center gap-1.5"
               >
                 <Package className="w-4 h-4 text-teal-600" /> Products CSV
               </button>
-              <button 
+              <button
                 onClick={() => triggerCsvExport('inventory')}
                 className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold flex items-center justify-center gap-1.5"
               >
                 <Warehouse className="w-4 h-4 text-blue-600" /> Inventory CSV
               </button>
-              <button 
+              <button
                 onClick={() => triggerCsvExport('sales')}
                 className="p-3 border border-[var(--border)] hover:border-[var(--teal-border)] rounded-lg text-center hover:bg-[var(--surface-hover)] transition-all font-semibold flex items-center justify-center gap-1.5"
               >

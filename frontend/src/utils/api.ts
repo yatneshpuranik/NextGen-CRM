@@ -3,7 +3,7 @@ import { store } from '../store';
 import { logout } from '../store/slices/authSlice';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/crm/v1',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
   withCredentials: true,
 });
 

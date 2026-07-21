@@ -60,7 +60,7 @@ export const ChallansPage: React.FC = () => {
 
   const downloadPdf = (id: string, type: 'challan' | 'invoice') => {
     const token = localStorage.getItem('token') || '';
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/crm/v1';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     window.open(`${apiUrl}/pdf/${type}/${id}?token=${token}`, '_blank');
   };
 

@@ -165,7 +165,7 @@ export const ReportsPage: React.FC = () => {
             <button
               onClick={() => {
                 const token = localStorage.getItem('token') || '';
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/crm/v1';
+                const apiUrl = import.meta.env.VITE_API_URL || 'https://api.yatneshpuranik.online';
                 window.open(`${apiUrl}/pdf/report/inventory?token=${token}`, '_blank');
               }}
               disabled={!hasData}

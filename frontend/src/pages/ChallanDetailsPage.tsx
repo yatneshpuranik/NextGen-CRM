@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FileDown, FileText, Pencil, Rocket, Trash2, CheckCircle2, CircleX } from 'lucide-react';
-import { 
-  fetchSalesChallanById, 
-  confirmSalesChallan, 
-  cancelSalesChallan, 
-  completeSalesChallan, 
+import {
+  fetchSalesChallanById,
+  confirmSalesChallan,
+  cancelSalesChallan,
+  completeSalesChallan,
   deleteSalesChallan
 } from '../store/slices/salesChallanSlice';
 import type { RootState } from '../store';
@@ -88,7 +88,7 @@ export const ChallanDetailsPage: React.FC = () => {
   if (!singleChallan) {
     return (
       <div className="p-6 text-center text-sm text-[var(--text-secondary)]">
-        Sales Challan record not found. 
+        Sales Challan record not found.
         <Link to="/dashboard/sales-challans" className="text-[var(--teal-text)] block hover:underline mt-2">
           Return to Hub
         </Link>
@@ -102,7 +102,7 @@ export const ChallanDetailsPage: React.FC = () => {
 
   const downloadPdf = (type: 'challan' | 'invoice') => {
     const token = localStorage.getItem('token') || '';
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/crm/v1';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     window.open(`${apiUrl}/pdf/${type}/${singleChallan.id}?token=${token}`, '_blank');
   };
 
@@ -110,7 +110,7 @@ export const ChallanDetailsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Toast notifications */}
       {toastMsg && <Toast message={toastMsg} type="info" onClose={() => setToastMsg(null)} />}
-      
+
       {/* Confirmation Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
@@ -160,7 +160,7 @@ export const ChallanDetailsPage: React.FC = () => {
           <Link to="/dashboard/sales-challans" className="btn-secondary-action">
             Back to Hub
           </Link>
-          
+
           {/* PDF Downloads */}
           <button onClick={() => downloadPdf('challan')} className="btn-secondary-action flex items-center gap-1.5">
             <FileDown className="w-4 h-4 text-red-500" /> PDF Challan
@@ -170,7 +170,7 @@ export const ChallanDetailsPage: React.FC = () => {
               <FileText className="w-4 h-4 text-blue-500" /> PDF Invoice
             </button>
           )}
-          
+
           {!isReadOnly && isDraft && (
             <>
               <Link to={`/dashboard/sales-challans/${singleChallan.id}/edit`} className="btn-primary-action flex items-center gap-1.5">
@@ -207,7 +207,7 @@ export const ChallanDetailsPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Customer & Item details */}
         <div className="lg:col-span-2 space-y-6">
-          
+
           {/* Customer CRM details */}
           <div className="content-card space-y-4">
             <h3 className="text-lg font-medium text-[var(--text-primary)]">CRM Recipient Details</h3>
@@ -286,11 +286,11 @@ export const ChallanDetailsPage: React.FC = () => {
 
         {/* Totals & Delivery Status Sidepanel */}
         <div className="space-y-6">
-          
+
           {/* Summary Card */}
           <div className="content-card space-y-4">
             <h3 className="text-lg font-medium text-[var(--text-primary)]">Shipping & Totals</h3>
-            
+
             <div className="space-y-3 text-sm border-b border-[var(--border)] pb-4">
               <div className="flex justify-between text-[var(--text-secondary)]">
                 <span>Subtotal (Gross)</span>

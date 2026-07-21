@@ -20,7 +20,7 @@ This document highlights the additional features and best practices implemented 
 ```
 
 ### 1. Interactive Developer Sandbox (Swagger)
--   **What:** Dynamic API documentation served at `/api-docs` using JSDoc route annotations.
+-   **What:** Dynamic API documentation served at `/crm/api` using JSDoc route annotations and OpenAPI 3.0 schemas.
 -   **Why:** Provides an interactive sandbox for frontend developers to test API endpoints directly without needing Postman or Insomnia collections.
 
 ### 2. Cloud Media Storage (Multer + Cloudinary)

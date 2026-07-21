@@ -1,218 +1,183 @@
-# NextGen ERP + CRM Platform (Sales & Inventory Management)
+# NextGen ERP + CRM Enterprise Platform
 
-A production-ready, high-performance, and scalable **Enterprise Sales & Inventory Management Platform** that integrates customer relationship tracking (CRM) with inventory management and billing automation (ERP).
+[![Production Live](https://img.shields.io/badge/Production-Live-emerald?style=for-the-badge)](https://crm.yatneshpuranik.online)
+[![API Status](https://img.shields.io/badge/API-Online-085041?style=for-the-badge)](https://api.yatneshpuranik.online)
+[![Swagger Docs](https://img.shields.io/badge/Swagger-API%20Docs-blue?style=for-the-badge)](https://api.yatneshpuranik.online/crm/api)
 
-This single monorepo repository acts as the codebase for the Vite-React frontend and the Node-Express backend api.
+A unified, high-performance **Enterprise Sales, Multi-Warehouse Inventory & Customer Relationship Management (CRM) Platform**. Engineered with Node.js, Express, Prisma ORM, Neon PostgreSQL, React (TypeScript), and TailwindCSS.
 
 ---
 
-## 📖 System Blueprints
+## 🌐 Production URLs
 
-To facilitate rapid development, this repository utilizes exactly five core documents that serve as the single source of truth for the entire platform:
+| Component | Live Production URL | Description |
+| :--- | :--- | :--- |
+| **Frontend Application** | [`https://crm.yatneshpuranik.online`](https://crm.yatneshpuranik.online) | High-speed Single Page App hosted on Vercel |
+| **Backend REST API** | [`https://api.yatneshpuranik.online`](https://api.yatneshpuranik.online) | Enterprise Express REST API hosted on Render PaaS |
+| **Swagger OpenAPI Specs** | [`https://api.yatneshpuranik.online/crm/api`](https://api.yatneshpuranik.online/crm/api) | Interactive OpenAPI 3.0.0 API documentation |
 
-1.  **[README.md](file:///d:/CRM/README.md)** (This File) - High-level introduction, technical stacks, environment variables setup, and local run/deployment operations.
-2.  **[PHASES.md](file:///d:/CRM/PHASES.md)** - Chronological development roadmap from Phase 0 to Phase 8, specifying exact tasks, deliverables, APIs, and DB changes per phase.
-3.  **[REQUIREMENTS.md](file:///d:/CRM/REQUIREMENTS.md)** - Functional specifications, transaction business rules, validation criteria, role authorization, and developer validation checklists.
-4.  **[PROJECT_ARCHITECTURE.md](file:///d:/CRM/PROJECT_ARCHITECTURE.md)** - Technical diagrams, backend route layering, DB model mappings, Redux slice frameworks, token refresh setups, and deployment settings.
-5.  **[YATNESH_ENHANCEMENTS.md](file:///d:/CRM/YATNESH_ENHANCEMENTS.md)** - Showcase of custom enterprise enhancements (Swagger, Cloudinary, Winston, PDFKit, Rate Limiter, Helmet) implemented to verify production readiness.
+---
+
+## 🏗️ System Architecture & Infrastructure
+
+```mermaid
+graph TD
+    Client[Browser / Client SPA] -->|HTTPS Requests| DNS[BigRock Custom Domain DNS]
+    DNS -->|crm.yatneshpuranik.online| Vercel[Vercel Frontend CDN]
+    DNS -->|api.yatneshpuranik.online| Render[Render Backend Server]
+    Render -->|Prisma ORM| Neon[(Neon Serverless PostgreSQL)]
+    Render -->|Media Assets| Cloudinary[Cloudinary CDN]
+    Render -->|Transactional Mail| SMTP[Gmail SMTP Gateway]
+```
+
+### Infrastructure Partners
+- **DNS & Custom Domains:** BigRock DNS (`yatneshpuranik.online`)
+- **Backend Application:** Containerized Node.js runtime on [Render](https://render.com)
+- **Frontend SPA Client:** Pre-compiled static React build on [Vercel](https://vercel.com)
+- **Database Engine:** PostgreSQL Serverless cluster on [Neon DB](https://neon.tech)
+- **Asset Storage:** [Cloudinary CDN](https://cloudinary.com) for product images and uploads
+
+---
+
+## 🚀 Key Modules & Capabilities
+
+1. **360° Customer Relationship Management (CRM)**
+   - Account lifecycle tracking (Leads, Retail, Wholesale, Distributors).
+   - Complete contact history, GST numbers, and purchasing profiles.
+
+2. **Multi-Warehouse Stock & Inventory Control**
+   - Physical warehouse location mapping & inter-warehouse stock transfers.
+   - Real-time stock balancing, automated low-stock warnings, and batch tracking.
+
+3. **Sales Delivery Challans & Invoicing**
+   - Full delivery challan lifecycle (`DRAFT` → `CONFIRMED` → `COMPLETED` → `CANCELLED`).
+   - Server-side automated PDF generation for delivery challans & tax invoices.
+   - Automatic stock deduction upon challan confirmation.
+
+4. **System Audit Trails & Security Compliance**
+   - Immutable audit logs capturing every user activity, transaction mutation, and setting update.
+   - IP address logging and timestamped record history.
+
+5. **Intelligent Email Delivery & Notification Logs**
+   - Automated emails for order dispatches, stock alerts, and security alerts.
+   - In-app notification bell with real-time unread badges and dispatch logs.
+
+6. **Database Backup & One-Click Restore**
+   - Automated JSON snapshot creation and full database restoration capabilities.
+   - CSV export utilities for accounts, inventory, and sales records.
+
+7. **Granular Role-Based Access Control (RBAC)**
+   - Pre-configured roles: `ADMIN`, `SALES`, `WAREHOUSE`, `ACCOUNTS`.
 
 ---
 
 ## 🛠️ Technology Stack
 
 ### Backend Core
--   **Runtime & Language:** Node.js (v18+ LTS) with TypeScript
--   **Server Framework:** Express.js
--   **Database Access Layer:** Prisma ORM
--   **Primary Database:** PostgreSQL (Neon Serverless PostgreSQL)
--   **Access Management:** JWT (JSON Web Tokens) & bcryptjs
--   **Request Verification:** express-validator
--   **API Sandbox Docs:** Swagger (swagger-jsdoc + swagger-ui-express)
--   **Image Parser & Upload:** Multer & Cloudinary
--   **Email Client:** Nodemailer (SMTP transport)
--   **Invoice Engine:** PDFKit (Server-side PDF generation)
+- **Runtime:** Node.js (v18+ LTS) with TypeScript
+- **Framework:** Express.js
+- **Database ORM:** Prisma ORM
+- **Database Engine:** Neon PostgreSQL Serverless
+- **Auth & Security:** JWT (JSON Web Tokens), bcryptjs, Helmet, Express Rate Limit
+- **API Specs:** Swagger (`swagger-jsdoc` + `swagger-ui-express`)
+- **PDF Engine:** PDFKit server-side generator
+- **Mail Gateway:** Nodemailer with SMTP transport
 
 ### Frontend Client
--   **Core Framework:** React (Vite bundler)
--   **State Management:** Redux Toolkit (Slices, async thunks)
--   **Client Router:** React Router Dom (v6, protected route checks)
--   **Network Client:** Axios (With request/response interceptors)
--   **UI Styles:** TailwindCSS
-
-### DevOps & Tools
--   **Containerization:** Docker & Docker Compose
--   **CI/CD Pipeline:** GitHub Actions
--   **Hosting Platforms:** Vercel (Frontend Client) & Render (Backend Service)
+- **Framework:** React 18 with Vite
+- **Language:** TypeScript
+- **State Management:** Redux Toolkit & React-Redux
+- **Routing:** React Router Dom v6
+- **Styling:** Custom Design Tokens + TailwindCSS
+- **Icons:** Lucide React
 
 ---
 
-## 📁 Project Directory Layout
+## ⚙️ Environment Variables
 
-```text
-d:\CRM\
-├── .github/                         # Automations and pipeline scripts
-│   └── workflows/
-│       └── deploy.yml               # GitHub Actions CI/CD configuration
-├── backend/                         # Express REST API (TypeScript)
-│   ├── prisma/                      # ORM Configuration
-│   │   ├── migrations/              # DB migration files
-│   │   ├── schema.prisma            # Database schemas
-│   │   └── seed.ts                  # Test seed entries
-│   ├── src/
-│   │   ├── config/                  # DB, mail, and logging setups
-│   │   ├── controllers/             # Express route handler files
-│   │   ├── middleware/              # JWT, RBAC, and error catchers
-│   │   ├── routes/                  # Route routers mapping
-│   │   ├── services/                # Database and transactional logic
-│   │   ├── validators/              # express-validator schemas
-│   │   ├── app.ts                   # Express app initializer
-│   │   └── server.ts                # Server listener
-│   ├── uploads/                     # Temp storage for Multer
-│   ├── Dockerfile
-│   └── tsconfig.json
-├── frontend/                        # React Dashboard (Vite + TS)
-│   ├── src/
-│   │   ├── assets/                  # Tailwind CSS styling index
-│   │   ├── components/              # Shared UI components (tables, inputs)
-│   │   ├── layouts/                 # Dashboard layouts (navbar, sidebar)
-│   │   ├── pages/                   # Main views (login, products, challans)
-│   │   ├── store/                   # Redux Store slices & actions
-│   │   └── utils/                   # Axios network adapters
-│   ├── Dockerfile
-│   └── tailwind.config.js
-└── docker-compose.yml               # Local compose setup
-```
-
----
-
-## ⚙️ Environment Variables Setup
-
-Create a `.env` file in the `backend/` directory:
+### Backend (`backend/.env`)
 
 ```env
-# Server Configuration
 PORT=5000
-NODE_ENV=development
-API_URL=http://localhost:5000
+NODE_ENV=production
+API_BASE_URL=https://api.yatneshpuranik.online
+CLIENT_URL=https://crm.yatneshpuranik.online
 
-# PostgreSQL Neon Connections
-DATABASE_URL="postgresql://user:password@ep-pool-host.us-east-1.aws.neon.tech/neondb?sslmode=require"
-DIRECT_URL="postgresql://user:password@ep-direct-host.us-east-1.aws.neon.tech/neondb?sslmode=require"
+# Database Connections (Neon PostgreSQL)
+DATABASE_URL="postgresql://user:password@ep-host-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+DIRECT_URL="postgresql://user:password@ep-host.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
 
-# Token Configurations
-JWT_SECRET=super_secret_jwt_encryption_key_for_production
-JWT_EXPIRES_IN=15m
-JWT_REFRESH_SECRET=super_secret_jwt_refresh_token_key_for_production
-JWT_REFRESH_EXPIRES_IN=7d
+# JWT Authentication
+JWT_SECRET=your_production_jwt_secret_key
+JWT_EXPIRES_IN=72h
 
 # Cloudinary Setup
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
 # SMTP Email Setup
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
+SMTP_USER=yatneshpuranik@gmail.com
 SMTP_PASS=your_app_password
-EMAIL_FROM=NextGen ERP <no-reply@nextgenerp.com>
+EMAIL_FROM="NextGen ERP <yatneshpuranik@gmail.com>"
 ```
 
-Create a `.env` file in the `frontend/` directory:
+### Frontend (`frontend/.env`)
 
 ```env
-VITE_API_URL=http://localhost:5000/api/v1
+VITE_API_URL=https://api.yatneshpuranik.online
 ```
 
 ---
 
-## 🚀 Running Locally
+## 💻 Local Development Setup
 
-### 1. Backend Setup & Seeding
+### 1. Backend Service
 ```bash
 cd backend
 npm install
 
 # Run database migrations
-npx prisma migrate dev --name init
+npx prisma db push
 
-# Populate seeds (creates default accounts, products, and customers)
+# Populate seed data
 npm run seed
 
-# Run local server
+# Start development server
 npm run dev
-# Running on http://localhost:5000 | Swagger Docs: http://localhost:5000/api-docs
 ```
+Backend active at `http://localhost:5000` | Swagger UI at `http://localhost:5000/crm/api`.
 
-### 2. Frontend Setup
+### 2. Frontend Application
 ```bash
 cd ../frontend
 npm install
 
-# Run client dev server
+# Start Vite client
 npm run dev
-# Dashboard running on http://localhost:5173
 ```
+Client active at `http://localhost:5173`.
 
 ---
 
-## 🔒 Verification & Test Credentials
+## 👥 Role-Based Access Control (RBAC) Matrix
 
-For quick system verification, the database seed file populates the following accounts:
-
-| Username / Email | Password | Role | UI Dashboard Authorization |
-| :--- | :--- | :---: | :--- |
-| `admin@nextgenerp.com` | `AdminPassword123!` | `ADMIN` | Full access. User creation, deletions, cancels. |
-| `manager@nextgenerp.com` | `ManagerPassword123!` | `MANAGER` | Stock edits, Challan confirmations. |
-| `user@nextgenerp.com` | `UserPassword123!` | `USER` | View lists. Draft challan creations. |
-
----
-
-## 🖥️ Live API Sandbox
-
--   **Local Documentation:** `http://localhost:5000/api-docs`
--   **Production Documentation:** `https://nextgen-api.onrender.com/api-docs`
+| Module / Page | ADMIN | SALES | WAREHOUSE | ACCOUNTS |
+| :--- | :---: | :---: | :---: | :---: |
+| **Dashboard & Analytics** | Full | View | View | View |
+| **Customer CRM** | Full | Full | Read-Only | Read-Only |
+| **Product Catalog** | Full | Read-Only | Full | Read-Only |
+| **Inventory & Stock** | Full | Read-Only | Full | Read-Only |
+| **Warehouses & Transfers** | Full | Read-Only | Full | Read-Only |
+| **Sales Challans** | Full | Full | Read-Only | Read-Only |
+| **Audit Trails & System Logs** | Full | Restricted | Restricted | Restricted |
+| **Backup & Database Restore** | Full | Restricted | Restricted | Restricted |
+| **Company Settings** | Full | Restricted | Restricted | Restricted |
 
 ---
 
-## 📦 Deployment Overview
+## 📄 License & Ownership
 
--   **Database:** PostgreSQL hosted on [Neon](https://neon.tech/).
--   **Backend REST APIs:** Containerized using the Backend `Dockerfile` and hosted on [Render](https://render.com/).
--   **Frontend SPA Client:** Pre-compiled static code hosted on [Vercel](https://vercel.com/) with rewrites configuration inside `vercel.json` to support router path reloads.
-
-Detailed step-by-step production guides and variable mappings are documented in **[DEPLOYMENT.md](file:///d:/CRM/DEPLOYMENT.md)**.
-
-### 🐳 Run locally with Docker
-To launch the entire platform (PostgreSQL database, Node backend, and Nginx-based React frontend) locally:
-```bash
-# Clone and build containers
-docker compose up --build -d
-
-# Run Prisma schema migrations
-docker compose exec backend npx prisma db push
-
-# Seed metadata credentials
-docker compose exec backend npm run seed
-```
-The React frontend client will be active at `http://localhost:80`, and the Express API at `http://localhost:5000`.
-
----
-
-## 📸 Dashboard Mockups & Panels
-
-### 1. Overview Panel
-A dashboard featuring key performance indicators: Active Customers, Gross Catalog SKUs, Confirmed Challans, Monthly Billing, and interactive charts visualizing sales vs. inventory volumes.
-![Overview Mockup](https://raw.githubusercontent.com/username/repo/main/docs/assets/overview.png)
-
-### 2. ERP Delivery Challan Workspace
-Allows creation and tracking of delivery notes. Confirmed notes are locked, displaying an **Invoice Generated** badge linking directly to the PDF invoice.
-![Challan Workspace](https://raw.githubusercontent.com/username/repo/main/docs/assets/challans.png)
-
----
-
-## 🔮 Future Enhancement Scope
-
-1.  **Multiple Warehouses:** Support stock tracking across different physical locations.
-2.  **Credit History Analytics:** Machine Learning scoring to predict payment defaults based on historical customer invoices.
-3.  **Real-Time Alerts:** Socket.io integrations to notify warehouse workers when stock levels fall below critical thresholds.
+Designed and developed for enterprise operations by **Yatnesh Puranik**. All rights reserved.

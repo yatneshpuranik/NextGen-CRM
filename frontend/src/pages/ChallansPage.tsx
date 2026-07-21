@@ -58,6 +58,12 @@ export const ChallansPage: React.FC = () => {
     }
   };
 
+  const downloadPdf = (id: string, type: 'challan' | 'invoice') => {
+    const token = localStorage.getItem('token') || '';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/crm/v1';
+    window.open(`${apiUrl}/pdf/${type}/${id}?token=${token}`, '_blank');
+  };
+
   const challanItems = Array.isArray(challanList) ? challanList : [];
 
   // Compute local summary counts
@@ -225,13 +231,21 @@ export const ChallansPage: React.FC = () => {
                         {item.createdByUser?.fullName}
                       </td>
                       <td className="py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-end gap-1.5">
                           <Link
                             to={`/dashboard/sales-challans/${item.id}`}
                             className="px-2 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--surface-hover)] transition text-[var(--text-primary)]"
                           >
                             View
                           </Link>
+                          <button
+                            type="button"
+                            onClick={() => downloadPdf(item.id, 'invoice')}
+                            title="Download Tax Invoice PDF"
+                            className="px-2 py-1 text-xs border border-blue-500/30 bg-blue-50/50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-100/50 transition font-medium flex items-center gap-1 cursor-pointer"
+                          >
+                            <FileText className="w-3 h-3 text-blue-500" /> Invoice
+                          </button>
                           {item.status === 'DRAFT' && !isReadOnly && (
                             <Link
                               to={`/dashboard/sales-challans/${item.id}/edit`}

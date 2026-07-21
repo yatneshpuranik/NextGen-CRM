@@ -54,28 +54,28 @@ jobs:
           npm run lint || true
           npm run build
 
-  # Job 2: Automate Live Service Deployments
-  deploy:
-    name: Production Deployments
-    needs: verify
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+  # # Job 2: Automate Live Service Deployments
+  # deploy:
+  #   name: Production Deployments
+  #   needs: verify
+    # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v4
 
-      # Deploy Backend to Render
-      - name: Deploy Backend (Render Web Service)
-        run: |
-          curl -f "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+  #     # Deploy Backend to Render
+  #     - name: Deploy Backend (Render Web Service)
+  #       run: |
+  #         curl -f "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
 
-      # Deploy Frontend to Vercel CDN
-      - name: Deploy Frontend (Vercel Client UI)
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-          working-directory: ./frontend
+  #     # Deploy Frontend to Vercel CDN
+  #     - name: Deploy Frontend (Vercel Client UI)
+  #       uses: amondnet/vercel-action@v25
+  #       with:
+  #         vercel-token: ${{ secrets.VERCEL_TOKEN }}
+  #         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+  #         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+  #         vercel-args: '--prod'
+  #         working-directory: ./frontend

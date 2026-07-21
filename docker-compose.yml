@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Database Service (Local PostgreSQL instance for offline runs)
+  db:
+    image: postgres:15-alpine
+    container_name: nextgen-postgres-local
+    restart: always
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: nextgen_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Backend Service (TypeScript Express API)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nextgen-backend-api
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://devuser:devpassword@db:5432/nextgen_dev?schema=public
+      - JWT_SECRET=local_development_jwt_secret_key_12345
+      - JWT_REFRESH_SECRET=local_development_jwt_refresh_secret_key_12345
+      - JWT_EXPIRES_IN=15m
+      - JWT_REFRESH_EXPIRES_IN=7d
+    depends_on:
+      - db
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  # Frontend Service (React Vite UI Dashboard)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:5000/api/v1
+    container_name: nextgen-frontend-ui
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

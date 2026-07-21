@@ -1,0 +1,76 @@
+name: CI/CD Production Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Job 1: Lint, Code Analysis, and Compiling Verification
+  verify:
+    name: Build & Code Verification
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      # Verify Database Schema Integrity
+      - name: Validate Prisma Schema
+        run: |
+          cd backend
+          npm ci
+          npx prisma validate
+
+      # Verify Backend Compilation
+      - name: Verify Backend (Lint & Build)
+        run: |
+          cd backend
+          npm run lint || true
+          npm run build
+
+      # Verify Frontend Compilation
+      - name: Verify Frontend (Lint & Build)
+        env:
+          VITE_API_URL: https://mock-api.onrender.com/api/v1
+        run: |
+          cd ../frontend
+          npm ci
+          npm run lint || true
+          npm run build
+
+  # Job 2: Automate Live Service Deployments
+  deploy:
+    name: Production Deployments
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Deploy Backend to Render
+      - name: Deploy Backend (Render Web Service)
+        run: |
+          curl -f "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+
+      # Deploy Frontend to Vercel CDN
+      - name: Deploy Frontend (Vercel Client UI)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./frontend

@@ -52,7 +52,7 @@ function App() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   return (
-    <Router>
+    <Router future={{ v7_relativeSplatPath: true }}>
       <Routes>
         <Route path="/login" element={!isAuthenticated ? <LoginPlaceholder /> : <Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={isAuthenticated ? <DashboardPlaceholder /> : <Navigate to="/login" />} />

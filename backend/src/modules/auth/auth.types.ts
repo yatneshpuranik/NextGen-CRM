@@ -1,7 +1,7 @@
 export type Role = 'ADMIN' | 'SALES' | 'WAREHOUSE' | 'ACCOUNTS';
 
 export interface RegisterDTO {
-  name: string;
+  fullName: string;
   email: string;
   password: string;
   confirmPassword?: string;
@@ -16,5 +16,5 @@ export interface LoginDTO {
 export interface ChangePasswordDTO {
   currentPassword: string;
   newPassword: string;
-  confirmNewPassword?: string;
+  confirmPassword?: string;
 }

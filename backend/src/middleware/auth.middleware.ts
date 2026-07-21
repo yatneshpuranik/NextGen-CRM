@@ -1,11 +1,13 @@
+// Enforces JWT validation and deactivation checking
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { verifyToken } from '../utils/jwt';
+import { prisma } from '../config/db';
 import { sendError } from '../utils/response';
-export type Role = 'ADMIN' | 'SALES' | 'WAREHOUSE' | 'ACCOUNTS';
+import { Role } from '../modules/auth/auth.types';
 
 export interface UserPayload {
   id: string;
-  name: string;
+  fullName: string;
   email: string;
   role: Role;
 }
@@ -19,11 +21,11 @@ declare global {
   }
 }
 
-export const authenticateJWT = (
+export const authenticateJWT = async (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
+): Promise<void> => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -39,13 +41,38 @@ export const authenticateJWT = (
   const token = authHeader.split(' ')[1];
 
   try {
-    const secret = process.env.JWT_SECRET || 'local_development_jwt_secret_key_12345';
-    const decoded = jwt.verify(token, secret) as UserPayload;
+    const decoded = verifyToken(token);
+
+    // Verify user still exists in database and is active
+    const dbUser = await prisma.user.findUnique({
+      where: { id: decoded.id }
+    });
+
+    if (!dbUser) {
+      sendError(
+        res,
+        'Authenticated user profile not found',
+        401,
+        [{ code: 'USER_NOT_FOUND', message: 'The user associated with this token no longer exists' }]
+      );
+      return;
+    }
+
+    if (!dbUser.isActive) {
+      sendError(
+        res,
+        'User account is deactivated',
+        401,
+        [{ code: 'DEACTIVATED_USER', message: 'Your account has been deactivated. Please contact an administrator.' }]
+      );
+      return;
+    }
+
     req.user = {
       id: decoded.id,
-      name: decoded.name,
+      fullName: decoded.fullName,
       email: decoded.email,
-      role: decoded.role
+      role: decoded.role as Role
     };
     next();
   } catch (error) {

@@ -1,9 +1,9 @@
 import { body } from 'express-validator';
 
 export const registerValidator = [
-  body('name')
+  body('fullName')
     .notEmpty()
-    .withMessage('Name is required')
+    .withMessage('Full Name is required')
     .trim(),
   body('email')
     .notEmpty()
@@ -49,12 +49,12 @@ export const changePasswordValidator = [
   body('newPassword')
     .isLength({ min: 8 })
     .withMessage('New password must contain at least 8 characters'),
-  body('confirmNewPassword')
+  body('confirmPassword')
     .notEmpty()
-    .withMessage('Confirm new password is required')
+    .withMessage('Confirm password is required')
     .custom((value, { req }) => {
       if (value !== req.body.newPassword) {
-        throw new Error('Confirm new password must match new password');
+        throw new Error('Confirm password must match new password');
       }
       return true;
     })

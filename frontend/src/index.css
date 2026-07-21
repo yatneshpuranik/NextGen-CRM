@@ -2,26 +2,227 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Surfaces */
+  --surface-page: #f5f4ef;
+  --surface-card: #ffffff;
+  --surface-hover: #f1f0ea;
+
+  /* Text */
+  --text-primary: #1a1a18;
+  --text-secondary: #5f5e5a;
+  --text-muted: #888780;
+  --border: rgba(0,0,0,0.08);
+
+  /* Teal - Dashboard/active nav + Customers stat card */
+  --teal-bg: #E1F5EE;
+  --teal-text: #085041;
+  --teal-text-strong: #04342C;
+  --teal-icon: #0F6E56;
+  --teal-border: #5DCAA5;
+
+  /* Purple - Challans stat card */
+  --purple-bg: #EEEDFE;
+  --purple-text: #3C3489;
+  --purple-text-strong: #26215C;
+  --purple-icon: #534AB7;
+
+  /* Red - Low stock / alerts */
+  --red-bg: #FCEBEB;
+  --red-text: #791F1F;
+  --red-text-strong: #501313;
+  --red-icon: #A32D2D;
+
+  /* Amber - Follow-ups / Draft status */
+  --amber-bg: #FAEEDA;
+  --amber-text: #633806;
+  --amber-text-strong: #412402;
+  --amber-icon: #854F0B;
+
+  --radius-card: 14px;
+  --radius-sidebar-item: 10px;
+  --radius-pill: 20px;
+}
+
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 antialiased font-sans;
+    background-color: var(--surface-page);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    font-weight: 500 !important; /* Headings must only use weight 500, never 600/700 */
   }
 }
 
-/* Custom scrollbar styling for enterprise panels */
+/* Custom scrollbar styling matching light warm theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-slate-950;
+  background: var(--surface-page);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-800 rounded;
+  background: var(--text-muted);
+  opacity: 0.3;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-slate-700;
+  background: var(--text-secondary);
+}
+
+/* ==========================================
+   Design System Components & Helper Classes
+   ========================================== */
+
+/* Sidebar Rules */
+.sidebar {
+  background-color: var(--surface-card);
+  border-right: 1px solid var(--border);
+  height: 100vh;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sidebar-item);
+  font-weight: 400;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.sidebar-item.active {
+  background-color: var(--teal-bg);
+  color: var(--teal-text-strong);
+  font-weight: 500;
+}
+
+.sidebar-item:hover:not(.active) {
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* Stat Cards (Tinted Backgrounds, Matching Icons, No White Cards) */
+.stat-card {
+  border-radius: var(--radius-card);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--border);
+}
+
+.stat-card.teal {
+  background-color: var(--teal-bg);
+  color: var(--teal-text-strong);
+}
+.stat-card.teal .stat-icon {
+  color: var(--teal-icon);
+}
+
+.stat-card.purple {
+  background-color: var(--purple-bg);
+  color: var(--purple-text-strong);
+}
+.stat-card.purple .stat-icon {
+  color: var(--purple-icon);
+}
+
+.stat-card.red {
+  background-color: var(--red-bg);
+  color: var(--red-text-strong);
+}
+.stat-card.red .stat-icon {
+  color: var(--red-icon);
+}
+
+.stat-card.amber {
+  background-color: var(--amber-bg);
+  color: var(--amber-text-strong);
+}
+.stat-card.amber .stat-icon {
+  color: var(--amber-icon);
+}
+
+.stat-card .stat-number {
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.stat-card .stat-label {
+  font-size: 0.875rem;
+  color: inherit;
+  opacity: 0.8;
+}
+
+/* Status Badges (Pill Shaped, Color-coded) */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--radius-pill);
+}
+
+.status-badge.confirmed {
+  background-color: var(--teal-bg);
+  color: var(--teal-text-strong);
+}
+
+.status-badge.draft {
+  background-color: var(--amber-bg);
+  color: var(--amber-text-strong);
+}
+
+.status-badge.cancelled,
+.status-badge.low-stock {
+  background-color: var(--red-bg);
+  color: var(--red-text-strong);
+}
+
+/* Outline style Primary Buttons */
+.btn-primary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--teal-bg);
+  border: 1px solid var(--teal-border);
+  color: var(--teal-text);
+  border-radius: var(--radius-sidebar-item);
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary-action:hover {
+  background-color: var(--surface-hover);
+  color: var(--teal-text-strong);
+  border-color: var(--teal-icon);
+}
+
+/* Container Cards */
+.content-card {
+  background-color: var(--surface-card);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  padding: 24px;
 }

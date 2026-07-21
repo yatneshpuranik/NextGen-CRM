@@ -261,7 +261,7 @@ router.get(
  *             required:
  *               - currentPassword
  *               - newPassword
- *               - confirmNewPassword
+ *               - confirmPassword
  *             properties:
  *               currentPassword:
  *                 type: string
@@ -271,7 +271,7 @@ router.get(
  *                 type: string
  *                 format: password
  *                 example: "NewPassword123!"
- *               confirmNewPassword:
+ *               confirmPassword:
  *                 type: string
  *                 format: password
  *                 example: "NewPassword123!"

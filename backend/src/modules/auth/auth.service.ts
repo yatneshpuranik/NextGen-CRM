@@ -1,27 +1,13 @@
-// AuthService handles business logic for password hashing, token signatures, and account changes.
-import bcryptjs from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+// AuthService manages user account registrations, credentials validation, and security notifications.
 import { prisma } from '../../config/db';
 import { ConflictError, UnauthorizedError, NotFoundError } from '../../utils/errors';
 import { User } from '../../../node_modules/.prisma/client';
 import { Role, RegisterDTO, LoginDTO, ChangePasswordDTO } from './auth.types';
 import { sendWelcomeEmail, sendPasswordChangeNotification } from '../../services/email.service';
+import { signToken } from '../../utils/jwt';
+import { hashPassword, comparePassword } from '../../utils/password';
 
 export class AuthService {
-  private getJwtSecret(): string {
-    return process.env.JWT_SECRET || 'local_development_jwt_secret_key_12345';
-  }
-
-  private generateToken(user: User): string {
-    const payload = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    };
-    return jwt.sign(payload, this.getJwtSecret(), { expiresIn: '24h' });
-  }
-
   private excludePassword(user: User) {
     const { password, ...userWithoutPassword } = user; // eslint-disable-line @typescript-eslint/no-unused-vars
     return userWithoutPassword;
@@ -36,19 +22,20 @@ export class AuthService {
       throw new ConflictError('A user with this email address already exists');
     }
 
-    const hashedPassword = await bcryptjs.hash(dto.password, 10);
+    const hashedPassword = await hashPassword(dto.password);
 
     const user = await prisma.user.create({
       data: {
-        name: dto.name,
+        fullName: dto.fullName,
         email: dto.email,
         password: hashedPassword,
-        role: dto.role as Role
+        role: dto.role as Role,
+        isActive: true
       }
     });
 
     // Asynchronously send welcome email to the newly registered user's email
-    sendWelcomeEmail(user.email, user.name).catch(() => {});
+    sendWelcomeEmail(user.email, user.fullName).catch(() => {});
 
     return this.excludePassword(user);
   }
@@ -62,12 +49,22 @@ export class AuthService {
       throw new UnauthorizedError('Invalid email address or password');
     }
 
-    const isPasswordValid = await bcryptjs.compare(dto.password, user.password);
+    // Security Gate: Reject deactivated/inactive users
+    if (!user.isActive) {
+      throw new UnauthorizedError('Your account is currently deactivated. Please contact an administrator.');
+    }
+
+    const isPasswordValid = await comparePassword(dto.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedError('Invalid email address or password');
     }
 
-    const accessToken = this.generateToken(user);
+    const accessToken = signToken({
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role as Role
+    });
 
     return {
       accessToken,
@@ -84,6 +81,10 @@ export class AuthService {
       throw new NotFoundError('User profile not found');
     }
 
+    if (!user.isActive) {
+      throw new UnauthorizedError('Your account has been deactivated');
+    }
+
     return this.excludePassword(user);
   }
 
@@ -96,12 +97,16 @@ export class AuthService {
       throw new NotFoundError('User profile not found');
     }
 
-    const isCurrentPasswordValid = await bcryptjs.compare(dto.currentPassword, user.password);
+    if (!user.isActive) {
+      throw new UnauthorizedError('Your account has been deactivated');
+    }
+
+    const isCurrentPasswordValid = await comparePassword(dto.currentPassword, user.password);
     if (!isCurrentPasswordValid) {
       throw new UnauthorizedError('Incorrect current password');
     }
 
-    const hashedNewPassword = await bcryptjs.hash(dto.newPassword, 10);
+    const hashedNewPassword = await hashPassword(dto.newPassword);
 
     await prisma.user.update({
       where: { id: userId },
@@ -109,6 +114,6 @@ export class AuthService {
     });
 
     // Send security notification email to the current user's email
-    sendPasswordChangeNotification(user.email, user.name).catch(() => {});
+    sendPasswordChangeNotification(user.email, user.fullName).catch(() => {});
   }
 }

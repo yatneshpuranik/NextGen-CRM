@@ -10,11 +10,11 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000/api/v1',
+        url: 'http://localhost:5000/crm/v1',
         description: 'Local Development Server',
       },
       {
-        url: 'https://nextgen-api.onrender.com/api/v1',
+        url: 'https://nextgen-api.onrender.com/crm/v1',
         description: 'Production Render PaaS',
       },
     ],
@@ -34,7 +34,12 @@ const options: swaggerJSDoc.Options = {
       },
     ],
   },
-  apis: ['./src/routes/*.ts', './src/controllers/*.ts', './dist/routes/*.js', './dist/controllers/*.js'],
+  apis: [
+    './src/routes/*.ts',
+    './src/modules/**/*.ts',
+    './dist/routes/*.js',
+    './dist/modules/**/*.js'
+  ],
 };
 
 export const swaggerSpec = swaggerJSDoc(options);

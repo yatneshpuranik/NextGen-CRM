@@ -40,7 +40,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(['/api-docs', '/crm/api'], swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Mount REST API Routers
-app.use('/api/v1', v1Routes);
+app.use('/crm/v1', v1Routes);
 
 // Global Error Handler Middleware
 app.use(globalErrorHandler);

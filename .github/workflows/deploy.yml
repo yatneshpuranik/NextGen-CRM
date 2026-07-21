@@ -12,10 +12,10 @@ jobs:
     name: Build & Code Verification
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/mock?schema=public"
-      DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/mock?schema=public"
-      JWT_SECRET: "mock-jwt-secret-key-for-building-verification-steps"
-      JWT_EXPIRES_IN: "24h"
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRES_IN: "72h"
     
     steps:
       - name: Checkout Code

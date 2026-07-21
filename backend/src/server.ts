@@ -100,8 +100,8 @@ process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
 process.on('unhandledRejection', (reason: any) => {
-  logger.error(`🚨 Unhandled Rejection: ${reason instanceof Error ? reason.message : reason}`, { 
-    stack: reason instanceof Error ? reason.stack : undefined 
+  logger.error(`🚨 Unhandled Rejection: ${reason instanceof Error ? reason.message : reason}`, {
+    stack: reason instanceof Error ? reason.stack : undefined
   });
 });
 
@@ -109,6 +109,18 @@ process.on('uncaughtException', (error: Error) => {
   logger.error(`🚨 Uncaught Exception: ${error.message}`, { stack: error.stack });
   // Uncaught exceptions require immediate process restart
   process.exit(1);
+});
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    application: "NextGen ERP + CRM API",
+    status: "Running",
+    version: "1.0.0",
+    swagger: "/crm/api",
+    api: "/crm/v1",
+    documentation: `${req.protocol}://${req.get("host")}/crm/api`,
+  });
 });
 
 startServer();

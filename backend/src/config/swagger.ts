@@ -4,8 +4,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const serverUrl = isProduction
   ? process.env.API_BASE_URL ||
-  'https://nextgen-crm-backend.onrender.com/crm/v1'
-  : 'http://localhost:5000/crm/v1';
+  'https://api.yatneshpuranik.online'
+  : 'http://localhost:5000';
 
 const options: swaggerJSDoc.Options = {
   definition: {

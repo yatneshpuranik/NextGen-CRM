@@ -42,4 +42,16 @@ const shutdown = async (): Promise<void> => {
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
+process.on('unhandledRejection', (reason: any) => {
+  logger.error(`🚨 Unhandled Rejection: ${reason instanceof Error ? reason.message : reason}`, { 
+    stack: reason instanceof Error ? reason.stack : undefined 
+  });
+});
+
+process.on('uncaughtException', (error: Error) => {
+  logger.error(`🚨 Uncaught Exception: ${error.message}`, { stack: error.stack });
+  // Uncaught exceptions require immediate process restart
+  process.exit(1);
+});
+
 startServer();

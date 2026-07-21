@@ -3,15 +3,21 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+import compression from 'compression';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import v1Routes from './routes';
 import { globalErrorHandler } from './middleware/error.middleware';
+import { requestLogger } from './middleware/logging.middleware';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
+
+// Apply request logging and response compression
+app.use(requestLogger);
+app.use(compression());
 
 // Apply security headers
 app.use(helmet());
@@ -30,7 +36,7 @@ const limiter = rateLimit({
   legacyHeaders: false,
   message: 'Too many requests from this IP, please try again after 15 minutes'
 });
-app.use('/api', limiter);
+app.use('/crm/v1', limiter);
 
 // Request body parsers
 app.use(express.json());

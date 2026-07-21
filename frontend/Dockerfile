@@ -1,16 +1,25 @@
-# Stage 1: Static assets compilation
-FROM node:18-alpine AS builder
+# Dockerfile for Frontend client
+FROM node:20-alpine AS builder
+
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm ci
+
 COPY . .
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
+
+# Build React assets
 RUN npm run build
 
-# Stage 2: Serve static files with Nginx
-FROM nginx:stable-alpine AS runner
+# Web server stage
+FROM nginx:stable-alpine
+
+# Copy bundled React build folder to Nginx directory
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom nginx configuration for routing
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 EXPOSE 80
+
 CMD ["nginx", "-g", "daemon off;"]

@@ -3,6 +3,7 @@ import { ProductService } from './product.service';
 import { sendSuccess } from '../../utils/response';
 import { uploadToCloudinary } from '../../services/cloudinary.service';
 import { CreateProductDTO, UpdateProductDTO, GetProductsQuery } from './product.types';
+import { AuditService } from '../audit/audit.service';
 
 export class ProductController {
   private productService: ProductService;
@@ -25,6 +26,17 @@ export class ProductController {
       }
 
       const product = await this.productService.createProduct(dto, userId);
+
+      // Write Audit Log entry
+      await AuditService.logAudit({
+        userId,
+        module: 'PRODUCT',
+        action: 'CREATE',
+        newValue: product,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
+
       sendSuccess(res, product, 201, 'Product profile created successfully');
     } catch (error) {
       next(error);
@@ -55,6 +67,12 @@ export class ProductController {
     try {
       const { id } = req.params;
       const dto: UpdateProductDTO = { ...req.body };
+      const userId = req.user?.id;
+      if (!userId) {
+        throw new Error('User context missing');
+      }
+
+      const previousValue = await this.productService.getProductById(id);
 
       // If a new image file was uploaded by Multer, transfer it to Cloudinary
       if (req.file) {
@@ -62,6 +80,18 @@ export class ProductController {
       }
 
       const product = await this.productService.updateProduct(id, dto);
+
+      // Write Audit Log entry
+      await AuditService.logAudit({
+        userId,
+        module: 'PRODUCT',
+        action: 'UPDATE',
+        previousValue,
+        newValue: product,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
+
       sendSuccess(res, product, 200, 'Product profile updated successfully');
     } catch (error) {
       next(error);
@@ -71,7 +101,24 @@ export class ProductController {
   public delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
+      const userId = req.user?.id;
+      if (!userId) {
+        throw new Error('User context missing');
+      }
+
+      const previousValue = await this.productService.getProductById(id);
       await this.productService.deleteProduct(id);
+
+      // Write Audit Log entry
+      await AuditService.logAudit({
+        userId,
+        module: 'PRODUCT',
+        action: 'DELETE',
+        previousValue,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
+
       sendSuccess(res, null, 200, 'Product profile deleted successfully');
     } catch (error) {
       next(error);
@@ -81,7 +128,25 @@ export class ProductController {
   public activate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
+      const userId = req.user?.id;
+      if (!userId) {
+        throw new Error('User context missing');
+      }
+
+      const previousValue = await this.productService.getProductById(id);
       const product = await this.productService.activateProduct(id);
+
+      // Write Audit Log entry
+      await AuditService.logAudit({
+        userId,
+        module: 'PRODUCT',
+        action: 'ACTIVATE',
+        previousValue,
+        newValue: product,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
+
       sendSuccess(res, product, 200, 'Product profile activated successfully');
     } catch (error) {
       next(error);
@@ -91,7 +156,25 @@ export class ProductController {
   public deactivate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
+      const userId = req.user?.id;
+      if (!userId) {
+        throw new Error('User context missing');
+      }
+
+      const previousValue = await this.productService.getProductById(id);
       const product = await this.productService.deactivateProduct(id);
+
+      // Write Audit Log entry
+      await AuditService.logAudit({
+        userId,
+        module: 'PRODUCT',
+        action: 'DEACTIVATE',
+        previousValue,
+        newValue: product,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
+
       sendSuccess(res, product, 200, 'Product profile deactivated successfully');
     } catch (error) {
       next(error);

@@ -174,7 +174,7 @@ export class CustomerService {
     }
 
     // 2. Prevent deletion if active/confirmed delivery challans exist
-    const activeChallan = await prisma.challan.findFirst({
+    const activeChallan = await prisma.salesChallan.findFirst({
       where: {
         customerId: id,
         status: { in: ['DRAFT', 'CONFIRMED'] }

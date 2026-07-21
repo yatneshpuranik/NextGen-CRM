@@ -39,15 +39,48 @@ export class ProductService {
     // 2. Generate unique code
     const productCode = await this.generateProductCode();
 
-    // 3. Create product record
-    return prisma.product.create({
-      data: {
-        ...dto,
-        productCode,
-        createdBy: userId,
-        isActive: true,
-        isDeleted: false
+    // 3. Create product record and inventory atomically
+    return prisma.$transaction(async (tx) => {
+      const product = await tx.product.create({
+        data: {
+          ...dto,
+          productCode,
+          createdBy: userId,
+          isActive: true,
+          isDeleted: false
+        }
+      });
+
+      const availableStock = dto.currentStock || 0;
+      const minimumStock = dto.minimumStock || 0;
+
+      const inventory = await tx.inventory.create({
+        data: {
+          productId: product.id,
+          availableStock,
+          minimumStock,
+          reorderLevel: minimumStock
+        }
+      });
+
+      // If there is initial stock, create a transaction log
+      if (availableStock > 0) {
+        await tx.stockTransaction.create({
+          data: {
+            productId: product.id,
+            inventoryId: inventory.id,
+            transactionType: 'STOCK_IN',
+            quantity: availableStock,
+            previousStock: 0,
+            newStock: availableStock,
+            reference: 'INITIAL_STOCK',
+            remarks: 'Initial stock intake upon product registration',
+            createdBy: userId
+          }
+        });
       }
+
+      return product;
     });
   }
 

@@ -26,9 +26,16 @@ export const authenticateJWT = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  let token = '';
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  } else if (req.query.token) {
+    token = req.query.token as string;
+  }
+
+  if (!token) {
     sendError(
       res,
       'Authentication token is missing or malformed',
@@ -37,8 +44,6 @@ export const authenticateJWT = async (
     );
     return;
   }
-
-  const token = authHeader.split(' ')[1];
 
   try {
     const decoded = verifyToken(token);

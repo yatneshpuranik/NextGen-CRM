@@ -1,22 +1,37 @@
-# Stage 1: Build compilation
-FROM node:18-alpine AS builder
+# Dockerfile for Backend Service
+FROM node:20-alpine AS builder
+
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm ci
-COPY tsconfig.json ./
-COPY prisma ./prisma/
-COPY src ./src/
+
+COPY . .
+
+# Generate Prisma client
 RUN npx prisma generate
+
+# Build TypeScript
 RUN npm run build
 
-# Stage 2: Production runtime runner
-FROM node:18-alpine AS runner
+# Production Runner
+FROM node:20-alpine AS runner
+
 WORKDIR /app
-ENV NODE_ENV=production
+
 COPY package*.json ./
 RUN npm ci --only=production
-COPY prisma ./prisma/
-RUN npx prisma generate
+
+# Copy built code and dependencies
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/prisma ./prisma
+
+# Make temporary uploads directory
+RUN mkdir -p uploads
+
 EXPOSE 5000
+
+ENV NODE_ENV=production
+
 CMD ["node", "dist/server.js"]

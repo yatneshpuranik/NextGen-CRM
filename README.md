@@ -181,7 +181,21 @@ For quick system verification, the database seed file populates the following ac
 -   **Backend REST APIs:** Containerized using the Backend `Dockerfile` and hosted on [Render](https://render.com/).
 -   **Frontend SPA Client:** Pre-compiled static code hosted on [Vercel](https://vercel.com/) with rewrites configuration inside `vercel.json` to support router path reloads.
 
-Refer to [PROJECT_ARCHITECTURE.md](file:///d:/CRM/PROJECT_ARCHITECTURE.md) and [PHASES.md](file:///d:/CRM/PHASES.md) for deployment parameters and diagrams.
+Detailed step-by-step production guides and variable mappings are documented in **[DEPLOYMENT.md](file:///d:/CRM/DEPLOYMENT.md)**.
+
+### 🐳 Run locally with Docker
+To launch the entire platform (PostgreSQL database, Node backend, and Nginx-based React frontend) locally:
+```bash
+# Clone and build containers
+docker compose up --build -d
+
+# Run Prisma schema migrations
+docker compose exec backend npx prisma db push
+
+# Seed metadata credentials
+docker compose exec backend npm run seed
+```
+The React frontend client will be active at `http://localhost:80`, and the Express API at `http://localhost:5000`.
 
 ---
 

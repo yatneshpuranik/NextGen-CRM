@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Search } from 'lucide-react';
 import api from '../utils/api';
 import Loader from '../components/Loader';
 
@@ -47,14 +48,17 @@ export const EmailLogsPage: React.FC = () => {
 
       {/* Filter panel */}
       <div className="content-card flex flex-col md:flex-row gap-4 justify-between items-center text-xs">
-        <div className="flex flex-1 gap-3 w-full md:w-auto">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            placeholder="Search recipient email or subject..."
-            className="flex-1 border rounded-lg p-2.5 bg-[var(--surface-card)]"
-          />
+        <div className="flex flex-1 gap-3 w-full md:w-auto items-center">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              placeholder="Search recipient email or subject..."
+              className="w-full border rounded-lg py-2 pl-10 pr-3 bg-[var(--surface-card)] text-sm"
+            />
+          </div>
 
           <select
             value={status}

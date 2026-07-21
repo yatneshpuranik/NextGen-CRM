@@ -11,7 +11,8 @@ import {
   Wrench,
   HeartCrack,
   RotateCcw,
-  X
+  X,
+  Search
 } from 'lucide-react';
 import ExportButton from '../components/ExportButton';
 import ImportModal from '../components/ImportModal';
@@ -208,13 +209,16 @@ export const InventoryPage: React.FC = () => {
           {/* Search bar */}
           <div>
             <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Search Products</label>
-            <input
-              type="text"
-              placeholder="Search Name, SKU, Code..."
-              value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--surface-card)]"
-            />
+            <div className="relative">
+              <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search Name, SKU, Code..."
+                value={filters.search}
+                onChange={(e) => handleFilterChange('search', e.target.value)}
+                className="w-full pl-10 pr-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--surface-card)]"
+              />
+            </div>
           </div>
 
           {/* Category dropdown */}

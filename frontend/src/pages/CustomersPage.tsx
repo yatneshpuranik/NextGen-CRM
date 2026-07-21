@@ -173,20 +173,20 @@ export const CustomersPage: React.FC = () => {
       {/* Search and Filters Block */}
       <div className="space-y-4">
         {/* Search Input */}
-        <div className="bg-[var(--surface-card)] border border-[var(--border)] rounded-xl p-4 flex items-center">
-          <Search className="w-5 h-5 text-[var(--text-secondary)] mr-3" />
+        <div className="relative bg-[var(--surface-card)] border border-[var(--border)] rounded-xl p-2.5 flex items-center">
+          <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by company name, contact person, email, or phone..."
-            className="w-full text-sm focus:outline-none bg-transparent placeholder-[var(--text-muted)]"
+            className="w-full text-sm pl-10 pr-12 focus:outline-none bg-transparent placeholder-[var(--text-muted)] border-0"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 font-medium"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] font-medium"
             >
               Clear
             </button>

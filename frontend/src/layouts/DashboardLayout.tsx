@@ -82,42 +82,42 @@ export const DashboardLayout: React.FC = () => {
       <GlobalSearchModal isOpen={showSearch} onClose={() => setShowSearch(false)} />
 
       {/* 1. Sidebar Nav */}
-      <aside className="sidebar w-64 fixed top-0 left-0 bottom-0 p-4 space-y-6 flex flex-col z-35">
-        <div className="px-3 py-4">
+      <aside className="sidebar w-64 fixed top-0 left-0 bottom-0 p-3 flex flex-col z-35 bg-[var(--surface-card)] border-r border-[var(--border)] overflow-hidden">
+        <div className="px-3 py-3 shrink-0">
           <h1 className="text-xl font-medium tracking-tight text-[var(--teal-text-strong)] flex items-center gap-2">
             <LayoutDashboard className="w-5 h-5 text-teal-600" /> NextGen ERP
           </h1>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5 font-medium">Core Enterprise Workspace</p>
         </div>
 
-        <nav className="flex-1 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 min-h-0 overflow-y-auto space-y-1 py-1 pr-1">
           <NavLink
             to="/dashboard"
             end
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
-            <LayoutDashboard className="w-5 h-5" /> Dashboard
+            <LayoutDashboard className="w-4.5 h-4.5" /> Dashboard
           </NavLink>
           {canSee(['ADMIN', 'SALES', 'ACCOUNTS']) && (
             <NavLink
               to="/dashboard/customers"
               className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
             >
-              <Users className="w-5 h-5" /> Customers
+              <Users className="w-4.5 h-4.5" /> Customers
             </NavLink>
           )}
           <NavLink
             to="/dashboard/products"
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
-            <Package className="w-5 h-5" /> Products
+            <Package className="w-4.5 h-4.5" /> Products
           </NavLink>
           {canSee(['ADMIN', 'WAREHOUSE', 'ACCOUNTS']) && (
             <NavLink
               to="/dashboard/inventory"
               className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
             >
-              <Boxes className="w-5 h-5" /> Inventory
+              <Boxes className="w-4.5 h-4.5" /> Inventory
             </NavLink>
           )}
           {canSee(['ADMIN', 'WAREHOUSE']) && (
@@ -125,66 +125,66 @@ export const DashboardLayout: React.FC = () => {
               to="/dashboard/warehouses"
               className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
             >
-              <Warehouse className="w-5 h-5" /> Warehouses
+              <Warehouse className="w-4.5 h-4.5" /> Warehouses
             </NavLink>
           )}
           <NavLink
             to="/dashboard/sales-challans"
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
-            <FileText className="w-5 h-5" /> Delivery Challans
+            <FileText className="w-4.5 h-4.5" /> Delivery Challans
           </NavLink>
           <NavLink
             to="/dashboard/analytics"
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
-            <BarChart3 className="w-5 h-5" /> Analytics
+            <BarChart3 className="w-4.5 h-4.5" /> Analytics
           </NavLink>
           <NavLink
             to="/dashboard/reports"
             className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
           >
-            <FileSpreadsheet className="w-5 h-5" /> Reports
+            <FileSpreadsheet className="w-4.5 h-4.5" /> Reports
           </NavLink>
 
           {/* Admin Restricted Paths */}
           {isAdmin && (
-            <div className="pt-4 border-t border-[var(--border)] mt-4 space-y-1.5">
-              <span className="block px-4 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Admin Panel</span>
+            <div className="pt-3 border-t border-[var(--border)] mt-3 space-y-1">
+              <span className="block px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Admin Panel</span>
               <NavLink
                 to="/dashboard/audit-logs"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
-                <ShieldCheck className="w-5 h-5" /> Audit Trails
+                <ShieldCheck className="w-4.5 h-4.5" /> Audit Trails
               </NavLink>
               <NavLink
                 to="/dashboard/backup-restore"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
-                <DatabaseBackup className="w-5 h-5" /> Backup & Export
+                <DatabaseBackup className="w-4.5 h-4.5" /> Backup & Export
               </NavLink>
               <NavLink
                 to="/dashboard/settings"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
-                <Settings className="w-5 h-5" /> Settings
+                <Settings className="w-4.5 h-4.5" /> Settings
               </NavLink>
               <NavLink
                 to="/dashboard/email-logs"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
-                <Mail className="w-5 h-5" /> Email Logs
+                <Mail className="w-4.5 h-4.5" /> Email Logs
               </NavLink>
             </div>
           )}
         </nav>
 
-        <div className="pt-4 border-t border-[var(--border)]">
+        <div className="pt-3 mt-auto shrink-0 border-t border-[var(--border)]">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--red-icon)] bg-[var(--red-bg)] hover:bg-[var(--surface-hover)] transition-colors rounded-lg font-medium"
+            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--red-icon)] bg-[var(--red-bg)] hover:bg-[var(--surface-hover)] transition-colors rounded-lg font-medium"
           >
-            <LogOut className="w-5 h-5" /> Sign Out
+            <LogOut className="w-4.5 h-4.5" /> Sign Out
           </button>
         </div>
       </aside>

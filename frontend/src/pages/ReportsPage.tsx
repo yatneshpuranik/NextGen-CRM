@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FileText, Printer, Download } from 'lucide-react';
+import { FileText, Printer, Download, Search } from 'lucide-react';
 import { fetchReport, clearReportsData } from '../store/slices/dashboardSlice';
 import { fetchCustomers } from '../store/slices/customerSlice';
 import { fetchProducts } from '../store/slices/productSlice';
@@ -205,13 +205,16 @@ export const ReportsPage: React.FC = () => {
 
           <div>
             <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Search Keywords</label>
-            <input
-              type="text"
-              placeholder="Search IDs, Names, SKUs..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full text-sm"
-            />
+            <div className="relative">
+              <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search IDs, Names, SKUs..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full text-sm pl-10 pr-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--surface-card)]"
+              />
+            </div>
           </div>
 
           {/* Conditional filters based on report selection */}

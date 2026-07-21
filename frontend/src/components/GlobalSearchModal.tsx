@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import type { RootState, AppDispatch } from '../store';
+import { Search } from 'lucide-react';
 import { executeGlobalSearch, clearSearchResults } from '../store/slices/enterpriseSlice';
 
 interface GlobalSearchModalProps {
@@ -96,7 +97,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
       >
         {/* Search Input Bar */}
         <div className="p-4 border-b border-[var(--border)] flex items-center gap-3">
-          <span className="text-lg">🔍</span>
+          <Search className="w-5 h-5 text-[var(--text-muted)] shrink-0" />
           <input 
             ref={inputRef}
             type="text"

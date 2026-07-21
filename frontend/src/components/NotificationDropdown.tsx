@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import type { RootState, AppDispatch } from '../store';
+import { Bell } from 'lucide-react';
 import { 
   fetchNotifications, 
   markNotificationRead, 
@@ -85,12 +86,14 @@ export const NotificationDropdown: React.FC = () => {
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-xl hover:bg-[var(--surface-hover)] rounded-full transition-colors flex items-center justify-center"
+        className="relative p-2 rounded-full hover:bg-[var(--surface-hover)] transition-colors flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        title="Notifications"
+        aria-label="Notifications"
       >
-        <span>🔔</span>
+        <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-[var(--red-icon)] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[var(--surface-card)]">
-            {unreadCount}
+          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-[var(--red-icon)] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[var(--surface-card)] leading-none shadow-sm animate-pulse">
+            {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </button>

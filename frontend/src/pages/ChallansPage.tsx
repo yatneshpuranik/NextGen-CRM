@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { FileText, Clock3, CheckCircle2, Package, Warehouse, Plus } from 'lucide-react';
+import { FileText, Clock3, CheckCircle2, Package, Warehouse, Plus, Search } from 'lucide-react';
 import ExportButton from '../components/ExportButton';
 import { fetchSalesChallans, setFilters, resetFilters, setPage } from '../store/slices/salesChallanSlice';
 import { fetchCustomers } from '../store/slices/customerSlice';
@@ -132,13 +132,16 @@ export const ChallansPage: React.FC = () => {
       <form onSubmit={handleSearchSubmit} className="content-card grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         <div>
           <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Search Challan</label>
-          <input
-            type="text"
-            placeholder="Challan Number..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--surface-card)]"
-          />
+          <div className="relative">
+            <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Challan Number..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--surface-card)]"
+            />
+          </div>
         </div>
 
         <div>

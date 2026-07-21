@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../store';
 import { fetchAuditLogs } from '../store/slices/enterpriseSlice';
+import { Search } from 'lucide-react';
 import Loader from '../components/Loader';
 
 export const AuditLogsPage: React.FC = () => {
@@ -62,13 +63,16 @@ export const AuditLogsPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
           <div>
             <label className="block font-semibold text-[var(--text-secondary)] mb-1">Search Keywords</label>
-            <input 
-              type="text" 
-              value={search} 
-              onChange={(e) => setSearch(e.target.value)} 
-              placeholder="Search user, emails, status..." 
-              className="w-full border rounded-lg p-2 bg-[var(--surface-card)]"
-            />
+            <div className="relative">
+              <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input 
+                type="text" 
+                value={search} 
+                onChange={(e) => setSearch(e.target.value)} 
+                placeholder="Search user, emails, status..." 
+                className="w-full border rounded-lg py-2 pl-10 pr-3 bg-[var(--surface-card)]"
+              />
+            </div>
           </div>
 
           <div>

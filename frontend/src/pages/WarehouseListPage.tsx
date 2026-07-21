@@ -63,28 +63,22 @@ export const WarehouseListPage: React.FC = () => {
       {/* Dashboard Summary Cards */}
       {dashboardSummary && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="content-card p-4 flex items-center gap-4 border-l-4 border-l-[var(--teal-border)]">
-            <Warehouse className="w-8 h-8 text-teal-600 shrink-0" />
-            <div>
-              <span className="text-xs text-[var(--text-secondary)] font-semibold block uppercase">Total Active Locations</span>
-              <span className="text-xl font-bold text-[var(--text-primary)]">{dashboardSummary.totalWarehouses} Warehouses</span>
-            </div>
+          <div className="stat-card teal">
+            <span className="stat-icon text-xl"><Warehouse className="w-6 h-6 text-[#0F6E56]" /></span>
+            <span className="stat-number">{dashboardSummary.totalWarehouses}</span>
+            <span className="stat-label">Total Active Locations</span>
           </div>
 
-          <div className="content-card p-4 flex items-center gap-4 border-l-4 border-l-[var(--purple-icon)]">
-            <Boxes className="w-8 h-8 text-purple-600 shrink-0" />
-            <div>
-              <span className="text-xs text-[var(--text-secondary)] font-semibold block uppercase">Total Physical Stock</span>
-              <span className="text-xl font-bold text-[var(--text-primary)]">{dashboardSummary.totalPhysicalStock.toLocaleString()} Units</span>
-            </div>
+          <div className="stat-card purple">
+            <span className="stat-icon text-xl"><Boxes className="w-6 h-6 text-[#534AB7]" /></span>
+            <span className="stat-number">{dashboardSummary.totalPhysicalStock.toLocaleString()}</span>
+            <span className="stat-label">Total Physical Stock Units</span>
           </div>
 
-          <div className="content-card p-4 flex items-center gap-4 border-l-4 border-l-[var(--amber-icon)]">
-            <RefreshCw className="w-8 h-8 text-amber-600 shrink-0" />
-            <div>
-              <span className="text-xs text-[var(--text-secondary)] font-semibold block uppercase">Warehouse Network</span>
-              <span className="text-xl font-bold text-[var(--text-primary)]">Synced Real-Time</span>
-            </div>
+          <div className="stat-card amber">
+            <span className="stat-icon text-xl"><RefreshCw className="w-6 h-6 text-[#854F0B]" /></span>
+            <span className="stat-number">Real-Time</span>
+            <span className="stat-label">Warehouse Network Synced</span>
           </div>
         </div>
       )}
@@ -93,20 +87,20 @@ export const WarehouseListPage: React.FC = () => {
       <div className="content-card flex flex-col md:flex-row gap-4 justify-between items-center text-xs">
         <div className="flex flex-1 gap-3 w-full md:w-auto items-center">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-3" />
+            <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search warehouse code, name, contact..."
-              className="w-full border rounded-lg p-2.5 pl-9 bg-[var(--surface-card)]"
+              className="w-full border rounded-lg py-2 pl-10 pr-3 bg-[var(--surface-card)] text-sm"
             />
           </div>
 
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="border rounded-lg p-2.5 bg-[var(--surface-card)]"
+            className="border rounded-lg py-2 px-3 bg-[var(--surface-card)] text-sm"
           >
             <option value="">All Statuses</option>
             <option value="ACTIVE">Active</option>

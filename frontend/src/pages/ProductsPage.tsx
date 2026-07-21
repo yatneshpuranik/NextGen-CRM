@@ -115,19 +115,19 @@ export const ProductsPage: React.FC = () => {
       </header>
 
       {/* Search Bar */}
-      <div className="flex gap-4 items-center bg-[var(--surface-card)] p-4 rounded-xl border border-[var(--border)]">
-        <Search className="w-5 h-5 text-[var(--text-secondary)]" />
+      <div className="relative flex items-center bg-[var(--surface-card)] p-2.5 rounded-xl border border-[var(--border)]">
+        <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by Product Name, SKU code, brand, or catalog code..."
-          className="flex-1 bg-transparent text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
+          className="w-full text-sm pl-10 pr-12 bg-transparent text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none border-0"
         />
         {searchQuery && (
           <button
             onClick={() => setSearchQuery('')}
-            className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] font-medium"
           >
             Clear
           </button>

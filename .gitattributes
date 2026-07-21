@@ -1,0 +1,35 @@
+# Enforce LF for all source, text, and configuration files
+* text=auto eol=lf
+
+# Explicitly mark specific file types as LF
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sql text eol=lf
+*.prisma text eol=lf
+*.env.example text eol=lf
+*.sh text eol=lf
+
+# Windows-specific batch files must use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Common binary files to prevent corruption
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.ttf binary

@@ -2,14 +2,24 @@ import { Request, Response, NextFunction } from 'express';
 import { WarehouseService } from './warehouse.service';
 import { sendSuccess } from '../../utils/response';
 import { CreateWarehouseDTO, UpdateWarehouseDTO, StockTransferDTO } from './warehouse.types';
+import { NotificationService } from '../notification/notification.service';
 
 export class WarehouseController {
   private warehouseService = new WarehouseService();
+  private notificationService = new NotificationService();
 
   public create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const dto: CreateWarehouseDTO = req.body;
       const wh = await this.warehouseService.createWarehouse(dto);
+
+      await this.notificationService.createNotification({
+        userId: null,
+        title: 'New Warehouse Facility Created',
+        message: `Warehouse facility ${wh.name} (${wh.code}) has been registered.`,
+        type: 'WAREHOUSE_CREATED'
+      });
+
       sendSuccess(res, wh, 201, 'Warehouse profile created successfully');
     } catch (error) {
       next(error);
@@ -91,6 +101,14 @@ export class WarehouseController {
         throw new Error('User context missing');
       }
       const transfer = await this.warehouseService.transferStock(dto, userId);
+
+      await this.notificationService.createNotification({
+        userId: null,
+        title: 'Inter-Warehouse Stock Transfer Completed',
+        message: `Transferred ${dto.quantity} units of product ID ${dto.productId} from source warehouse to destination warehouse.`,
+        type: 'STOCK_TRANSFER'
+      });
+
       sendSuccess(res, transfer, 200, 'Stock transfer completed successfully');
     } catch (error) {
       next(error);

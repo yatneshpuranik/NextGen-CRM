@@ -11,12 +11,12 @@ export class NotificationController {
 
   public getAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user?.id;
-      if (!userId) {
+      const user = req.user;
+      if (!user) {
         throw new Error('User context missing');
       }
 
-      const result = await this.notificationService.getUserNotifications(userId);
+      const result = await this.notificationService.getUserNotifications(user.id, user.role);
       sendSuccess(res, result, 200, 'Notifications list retrieved successfully');
     } catch (error) {
       next(error);
@@ -26,12 +26,12 @@ export class NotificationController {
   public markRead = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const userId = req.user?.id;
-      if (!userId) {
+      const user = req.user;
+      if (!user) {
         throw new Error('User context missing');
       }
 
-      const result = await this.notificationService.markAsRead(id, userId);
+      const result = await this.notificationService.markAsRead(id, user.id, user.role);
       sendSuccess(res, result, 200, 'Notification marked as read successfully');
     } catch (error) {
       next(error);
@@ -40,12 +40,12 @@ export class NotificationController {
 
   public markAllRead = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user?.id;
-      if (!userId) {
+      const user = req.user;
+      if (!user) {
         throw new Error('User context missing');
       }
 
-      await this.notificationService.markAllAsRead(userId);
+      await this.notificationService.markAllAsRead(user.id, user.role);
       sendSuccess(res, null, 200, 'All notifications marked as read successfully');
     } catch (error) {
       next(error);
@@ -55,12 +55,12 @@ export class NotificationController {
   public delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const userId = req.user?.id;
-      if (!userId) {
+      const user = req.user;
+      if (!user) {
         throw new Error('User context missing');
       }
 
-      await this.notificationService.deleteNotification(id, userId);
+      await this.notificationService.deleteNotification(id, user.id, user.role);
       sendSuccess(res, null, 200, 'Notification deleted successfully');
     } catch (error) {
       next(error);

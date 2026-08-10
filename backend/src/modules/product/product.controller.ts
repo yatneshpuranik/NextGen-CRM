@@ -4,12 +4,15 @@ import { sendSuccess } from '../../utils/response';
 import { uploadToCloudinary } from '../../services/cloudinary.service';
 import { CreateProductDTO, UpdateProductDTO, GetProductsQuery } from './product.types';
 import { AuditService } from '../audit/audit.service';
+import { NotificationService } from '../notification/notification.service';
 
 export class ProductController {
   private productService: ProductService;
+  private notificationService: NotificationService;
 
   constructor() {
     this.productService = new ProductService();
+    this.notificationService = new NotificationService();
   }
 
   public create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -35,6 +38,14 @@ export class ProductController {
         newValue: product,
         ipAddress: req.ip,
         userAgent: req.headers['user-agent']
+      });
+
+      // Dispatch in-app notification for Warehouse and Admin
+      await this.notificationService.createNotification({
+        userId: null,
+        title: 'New Product Registered',
+        message: `Product ${product.productName} (${product.sku}) has been added to catalog by ${req.user?.fullName}.`,
+        type: 'NEW_PRODUCT'
       });
 
       sendSuccess(res, product, 201, 'Product profile created successfully');

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import api from '../../utils/api';
+import { queryCache } from '../../utils/queryCache';
 
 export interface Product {
   id: string;
@@ -56,7 +57,7 @@ const initialState: ProductState = {
   error: null,
   pagination: {
     page: 1,
-    limit: 10,
+    limit: 8,
     totalPages: 1,
     totalRecords: 0,
   },
@@ -79,6 +80,22 @@ export const fetchProducts = createAsyncThunk(
       const { page, limit } = state.product.pagination;
       const { search, isActive, category, brand, sortBy, sortOrder } = state.product.filters;
 
+      const params = {
+        page,
+        limit,
+        search: search || '',
+        isActive: isActive || '',
+        category: category || '',
+        brand: brand || '',
+        sortBy,
+        sortOrder,
+      };
+
+      const cachedData = queryCache.get('products', params);
+      if (cachedData) {
+        return cachedData;
+      }
+
       const response = await api.get('/products', {
         params: {
           page,
@@ -92,6 +109,7 @@ export const fetchProducts = createAsyncThunk(
         },
       });
 
+      queryCache.set('products', params, response.data.data);
       return response.data.data; // Expected format: { products, pagination }
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch products');
@@ -120,6 +138,7 @@ export const createProduct = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
+      queryCache.invalidate('products');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to create product');
@@ -136,6 +155,7 @@ export const updateProduct = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
+      queryCache.invalidate('products');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to update product');
@@ -148,6 +168,7 @@ export const deleteProduct = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       await api.delete(`/products/${id}`);
+      queryCache.invalidate('products');
       return id;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to delete product');
@@ -160,6 +181,7 @@ export const activateProduct = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await api.patch(`/products/${id}/activate`);
+      queryCache.invalidate('products');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to activate product');
@@ -172,6 +194,7 @@ export const deactivateProduct = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await api.patch(`/products/${id}/deactivate`);
+      queryCache.invalidate('products');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to deactivate product');

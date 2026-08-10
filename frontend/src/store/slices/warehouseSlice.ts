@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
+import { queryCache } from '../../utils/queryCache';
 
 export interface Warehouse {
   id: string;
@@ -50,7 +51,18 @@ export const fetchWarehouses = createAsyncThunk<any, { search?: string; status?:
   'warehouse/fetchWarehouses',
   async (params, { rejectWithValue }) => {
     try {
-      const res = await api.get('/warehouses', { params });
+      const queryParams = {
+        page: params?.page || 1,
+        limit: params?.limit || 8,
+        search: params?.search || '',
+        status: params?.status || '',
+      };
+
+      const cached = queryCache.get('warehouses', queryParams);
+      if (cached) return cached;
+
+      const res = await api.get('/warehouses', { params: queryParams });
+      queryCache.set('warehouses', queryParams, res.data.data);
       return res.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch warehouses');

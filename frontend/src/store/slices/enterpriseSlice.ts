@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
+import { queryCache } from '../../utils/queryCache';
 
 export interface AuditRecord {
   id: string;
@@ -62,6 +63,7 @@ interface EnterpriseState {
     totalRecords: number;
   } | null;
   notifications: InAppNotification[];
+  unreadCount: number;
   settings: CompanySettings | null;
   searchResults: GlobalSearchResults;
   loading: boolean;
@@ -72,6 +74,7 @@ const initialState: EnterpriseState = {
   auditLogs: [],
   auditPagination: null,
   notifications: [],
+  unreadCount: 0,
   settings: null,
   searchResults: {
     customers: [],
@@ -88,10 +91,34 @@ export const fetchAuditLogs = createAsyncThunk(
   'enterprise/fetchAuditLogs',
   async (query: any, { rejectWithValue }) => {
     try {
-      const response = await api.get('/audit', { params: query });
+      const params = {
+        page: query?.page || 1,
+        limit: query?.limit || 8,
+        search: query?.search || '',
+        module: query?.module || '',
+        action: query?.action || ''
+      };
+
+      const cached = queryCache.get('auditLogs', params);
+      if (cached) return cached;
+
+      const response = await api.get('/audit', { params });
+      queryCache.set('auditLogs', params, response.data.data);
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch audit logs');
+    }
+  }
+);
+
+export const fetchUnreadCount = createAsyncThunk(
+  'enterprise/fetchUnreadCount',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/notifications/unread-count');
+      return response.data.data.count;
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || 'Failed to fetch unread count');
     }
   }
 );
@@ -221,18 +248,26 @@ const enterpriseSlice = createSlice({
       state.error = action.payload as string;
     });
 
+    // Unread Count
+    builder.addCase(fetchUnreadCount.fulfilled, (state, action) => {
+      state.unreadCount = action.payload;
+    });
+
     // Notifications
     builder.addCase(fetchNotifications.fulfilled, (state, action) => {
       state.notifications = action.payload;
+      state.unreadCount = action.payload.filter((n: any) => !n.isRead).length;
     });
     builder.addCase(markNotificationRead.fulfilled, (state, action) => {
       const index = state.notifications.findIndex((n) => n.id === action.payload.id);
       if (index !== -1) {
         state.notifications[index] = action.payload;
       }
+      state.unreadCount = Math.max(0, state.unreadCount - 1);
     });
     builder.addCase(markAllNotificationsRead.fulfilled, (state) => {
       state.notifications = state.notifications.map((n) => ({ ...n, isRead: true }));
+      state.unreadCount = 0;
     });
     builder.addCase(deleteNotification.fulfilled, (state, action) => {
       state.notifications = state.notifications.filter((n) => n.id !== action.payload);

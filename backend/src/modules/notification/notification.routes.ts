@@ -23,6 +23,7 @@ router.use(authenticateJWT);
  *         description: Notifications list retrieved.
  */
 router.get('/', controller.getAll);
+router.get('/unread-count', controller.getUnreadCount);
 
 /**
  * @openapi

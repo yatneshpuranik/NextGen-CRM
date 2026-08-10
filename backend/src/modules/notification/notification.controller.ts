@@ -23,6 +23,20 @@ export class NotificationController {
     }
   };
 
+  public getUnreadCount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const user = req.user;
+      if (!user) {
+        throw new Error('User context missing');
+      }
+
+      const count = await this.notificationService.getUnreadCount(user.id, user.role);
+      sendSuccess(res, { count }, 200, 'Unread notification count retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public markRead = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;

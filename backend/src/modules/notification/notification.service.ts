@@ -126,6 +126,39 @@ export class NotificationService {
   }
 
   /**
+   * Retrieve unread count for user based on role authorization
+   */
+  public async getUnreadCount(userId: string, role: Role): Promise<number> {
+    const allowedTypes = ROLE_NOTIFICATION_TYPES[role];
+
+    let whereClause: any;
+    if (role === 'ADMIN') {
+      whereClause = {
+        OR: [
+          { userId },
+          { userId: null }
+        ],
+        isRead: false
+      };
+    } else {
+      whereClause = {
+        OR: [
+          { userId },
+          {
+            userId: null,
+            type: { in: allowedTypes || [] }
+          }
+        ],
+        isRead: false
+      };
+    }
+
+    return prisma.notification.count({
+      where: whereClause
+    });
+  }
+
+  /**
    * Toggle single alert to read if authorized
    */
   public async markAsRead(id: string, userId: string, role: Role): Promise<any> {

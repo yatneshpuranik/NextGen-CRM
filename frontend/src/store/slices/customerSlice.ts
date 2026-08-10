@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import api from '../../utils/api';
+import { queryCache } from '../../utils/queryCache';
 
 export interface Customer {
   id: string;
@@ -55,7 +56,7 @@ const initialState: CustomerState = {
   error: null,
   pagination: {
     page: 1,
-    limit: 10,
+    limit: 8,
     totalPages: 1,
     totalRecords: 0,
   },
@@ -77,6 +78,21 @@ export const fetchCustomers = createAsyncThunk(
       const { page, limit } = state.customer.pagination;
       const { search, isActive, customerType, sortBy, sortOrder } = state.customer.filters;
 
+      const params = {
+        page,
+        limit,
+        search: search || '',
+        isActive: isActive || '',
+        customerType: customerType || '',
+        sortBy,
+        sortOrder,
+      };
+
+      const cachedData = queryCache.get('customers', params);
+      if (cachedData) {
+        return cachedData;
+      }
+
       const response = await api.get('/customers', {
         params: {
           page,
@@ -89,6 +105,7 @@ export const fetchCustomers = createAsyncThunk(
         },
       });
 
+      queryCache.set('customers', params, response.data.data);
       return response.data.data; // Expected format: { customers, pagination }
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch customers');
@@ -113,6 +130,7 @@ export const createCustomer = createAsyncThunk(
   async (data: Omit<Customer, 'id' | 'customerCode' | 'isActive' | 'createdAt' | 'updatedAt'>, { rejectWithValue }) => {
     try {
       const response = await api.post('/customers', data);
+      queryCache.invalidate('customers');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data || { message: 'Failed to create customer profile' });
@@ -125,6 +143,7 @@ export const updateCustomer = createAsyncThunk(
   async ({ id, data }: { id: string; data: Partial<Customer> }, { rejectWithValue }) => {
     try {
       const response = await api.put(`/customers/${id}`, data);
+      queryCache.invalidate('customers');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data || { message: 'Failed to update customer profile' });
@@ -137,6 +156,7 @@ export const deleteCustomer = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       await api.delete(`/customers/${id}`);
+      queryCache.invalidate('customers');
       return id;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to delete customer profile');
@@ -149,6 +169,7 @@ export const activateCustomer = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await api.patch(`/customers/${id}/activate`);
+      queryCache.invalidate('customers');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to activate customer');
@@ -161,6 +182,7 @@ export const deactivateCustomer = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await api.patch(`/customers/${id}/deactivate`);
+      queryCache.invalidate('customers');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to deactivate customer');

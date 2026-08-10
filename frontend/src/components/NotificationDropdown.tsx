@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import type { RootState, AppDispatch } from '../store';
 import { Bell } from 'lucide-react';
 import { 
+  fetchUnreadCount,
   fetchNotifications, 
   markNotificationRead, 
   markAllNotificationsRead, 
@@ -13,17 +14,18 @@ import {
 export const NotificationDropdown: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { notifications } = useSelector((state: RootState) => state.enterprise);
+  const { notifications, unreadCount } = useSelector((state: RootState) => state.enterprise);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    dispatch(fetchNotifications());
+    // Initial fetch of lightweight unread count
+    dispatch(fetchUnreadCount());
     
-    // Poll for notifications every 20 seconds
+    // Poll unread count every 30 seconds
     const interval = setInterval(() => {
-      dispatch(fetchNotifications());
-    }, 20000);
+      dispatch(fetchUnreadCount());
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [dispatch]);
@@ -38,7 +40,14 @@ export const NotificationDropdown: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const handleToggle = () => {
+    const nextState = !isOpen;
+    setIsOpen(nextState);
+    if (nextState) {
+      // Lazy load actual notification list only when user opens panel
+      dispatch(fetchNotifications());
+    }
+  };
 
   const handleMarkAllRead = () => {
     dispatch(markAllNotificationsRead());
@@ -85,7 +94,7 @@ export const NotificationDropdown: React.FC = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="relative p-2 rounded-full hover:bg-[var(--surface-hover)] transition-colors flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
         title="Notifications"
         aria-label="Notifications"

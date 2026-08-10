@@ -3,6 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import api from '../../utils/api';
 import type { Customer } from './customerSlice';
 import type { Product } from './productSlice';
+import { queryCache } from '../../utils/queryCache';
 
 export interface SalesChallanItem {
   id: string;
@@ -72,7 +73,7 @@ const initialState: SalesChallanState = {
   error: null,
   pagination: {
     page: 1,
-    limit: 10,
+    limit: 8,
     totalPages: 1,
     totalRecords: 0,
   },
@@ -96,6 +97,23 @@ export const fetchSalesChallans = createAsyncThunk(
       const { page, limit } = state.salesChallan.pagination;
       const { search, status, customerId, startDate, endDate, sortBy, sortOrder } = state.salesChallan.filters;
 
+      const params = {
+        page,
+        limit,
+        search: search || '',
+        status: status || '',
+        customerId: customerId || '',
+        startDate: startDate || '',
+        endDate: endDate || '',
+        sortBy,
+        sortOrder,
+      };
+
+      const cachedData = queryCache.get('sales-challans', params);
+      if (cachedData) {
+        return cachedData;
+      }
+
       const response = await api.get('/sales-challans', {
         params: {
           page,
@@ -110,6 +128,7 @@ export const fetchSalesChallans = createAsyncThunk(
         },
       });
 
+      queryCache.set('sales-challans', params, response.data.data);
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch sales challans');
@@ -134,6 +153,7 @@ export const createSalesChallan = createAsyncThunk(
   async (data: { customerId: string; deliveryDate?: string; remarks?: string; discount?: number; items: { productId: string; quantity: number; sellingPrice: number; discount?: number }[] }, { rejectWithValue }) => {
     try {
       const response = await api.post('/sales-challans', data);
+      queryCache.invalidate('sales-challans');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to create sales challan');
@@ -146,6 +166,7 @@ export const updateSalesChallan = createAsyncThunk(
   async ({ id, data }: { id: string; data: { deliveryDate?: string; remarks?: string; discount?: number; items?: { productId: string; quantity: number; sellingPrice: number; discount?: number }[] } }, { rejectWithValue }) => {
     try {
       const response = await api.put(`/sales-challans/${id}`, data);
+      queryCache.invalidate('sales-challans');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to update sales challan');
@@ -158,6 +179,7 @@ export const deleteSalesChallan = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       await api.delete(`/sales-challans/${id}`);
+      queryCache.invalidate('sales-challans');
       return id;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to delete sales challan');
@@ -170,6 +192,8 @@ export const confirmSalesChallan = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await api.post(`/sales-challans/${id}/confirm`);
+      queryCache.invalidate('sales-challans');
+      queryCache.invalidate('inventory');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to confirm sales challan');
@@ -182,6 +206,8 @@ export const cancelSalesChallan = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await api.post(`/sales-challans/${id}/cancel`);
+      queryCache.invalidate('sales-challans');
+      queryCache.invalidate('inventory');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to cancel sales challan');
@@ -194,6 +220,7 @@ export const completeSalesChallan = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await api.post(`/sales-challans/${id}/complete`);
+      queryCache.invalidate('sales-challans');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to complete sales challan');

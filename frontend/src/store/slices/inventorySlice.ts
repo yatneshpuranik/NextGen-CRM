@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import api from '../../utils/api';
 import type { Product } from './productSlice';
+import { queryCache } from '../../utils/queryCache';
 
 export interface Inventory {
   id: string;
@@ -89,13 +90,13 @@ const initialState: InventoryState = {
   error: null,
   pagination: {
     page: 1,
-    limit: 10,
+    limit: 8,
     totalPages: 1,
     totalRecords: 0,
   },
   transactionPagination: {
     page: 1,
-    limit: 10,
+    limit: 8,
     totalPages: 1,
     totalRecords: 0,
   },
@@ -121,6 +122,25 @@ export const fetchInventory = createAsyncThunk(
       const { page, limit } = state.inventory.pagination;
       const { search, category, brand, lowStock, outOfStock, damaged, warehouse, sortBy, sortOrder } = state.inventory.filters;
 
+      const params = {
+        page,
+        limit,
+        search: search || '',
+        category: category || '',
+        brand: brand || '',
+        warehouse: warehouse || '',
+        lowStock: lowStock || '',
+        outOfStock: outOfStock || '',
+        damaged: damaged || '',
+        sortBy,
+        sortOrder,
+      };
+
+      const cachedData = queryCache.get('inventory', params);
+      if (cachedData) {
+        return cachedData;
+      }
+
       const response = await api.get('/inventory', {
         params: {
           page,
@@ -137,6 +157,7 @@ export const fetchInventory = createAsyncThunk(
         },
       });
 
+      queryCache.set('inventory', params, response.data.data);
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch inventory');

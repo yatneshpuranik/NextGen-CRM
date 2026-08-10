@@ -44,7 +44,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
 
     const timer = setTimeout(() => {
       dispatch(executeGlobalSearch(query));
-    }, 300);
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [query, dispatch]);
@@ -150,7 +150,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
               {canSeeCustomers && searchResults.customers.length > 0 && (
                 <div className="space-y-1">
                   <h5 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-2">Customers</h5>
-                  {searchResults.customers.map((c) => (
+                  {searchResults.customers.slice(0, 5).map((c) => (
                     <div 
                       key={c.id}
                       onClick={() => handleSelectResult(`/dashboard/customers/${c.id}`, c.companyName)}
@@ -167,7 +167,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
               {searchResults.products.length > 0 && (
                 <div className="space-y-1">
                   <h5 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-2">Products</h5>
-                  {searchResults.products.map((p) => (
+                  {searchResults.products.slice(0, 5).map((p) => (
                     <div 
                       key={p.id}
                       onClick={() => handleSelectResult(`/dashboard/products/${p.id}`, p.productName)}
@@ -184,7 +184,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
               {canSeeInventory && searchResults.inventory.length > 0 && (
                 <div className="space-y-1">
                   <h5 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-2">Inventory Stock</h5>
-                  {searchResults.inventory.map((i) => (
+                  {searchResults.inventory.slice(0, 5).map((i) => (
                     <div 
                       key={i.id}
                       onClick={() => handleSelectResult(`/dashboard/inventory/${i.id}`, i.product?.productName)}
@@ -201,7 +201,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
               {searchResults.challans.length > 0 && (
                 <div className="space-y-1">
                   <h5 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-2">Delivery Challans</h5>
-                  {searchResults.challans.map((ch) => (
+                  {searchResults.challans.slice(0, 5).map((ch) => (
                     <div 
                       key={ch.id}
                       onClick={() => handleSelectResult(`/dashboard/sales-challans/${ch.id}`, ch.challanNumber)}

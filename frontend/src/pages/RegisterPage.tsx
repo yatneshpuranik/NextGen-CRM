@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import Toast from '../components/Toast';
 import Loader from '../components/Loader';
 
 export const RegisterPage: React.FC = () => {
-  const navigate = useNavigate();
-  
+  // const navigate = useNavigate();
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState('SALES');
-  
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  
+
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const validateForm = () => {
@@ -48,7 +48,7 @@ export const RegisterPage: React.FC = () => {
 
     setLoading(true);
     setErrors({});
-    
+
     try {
       await api.post('/auth/register', {
         fullName,
@@ -79,7 +79,7 @@ export const RegisterPage: React.FC = () => {
         });
         setErrors(valErrors);
       }
-      
+
       setToast({
         message: responseData?.message || 'Registration failed. Permissions check rejected request.',
         type: 'error',

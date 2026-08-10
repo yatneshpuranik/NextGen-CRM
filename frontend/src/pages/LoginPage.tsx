@@ -7,6 +7,8 @@ import type { RootState } from '../store';
 import Toast from '../components/Toast';
 import Loader from '../components/Loader';
 
+import logoImg from '../assets/logo.png';
+
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -79,6 +81,7 @@ export const LoginPage: React.FC = () => {
     <div className="flex min-h-screen items-center justify-center bg-[var(--surface-page)] px-4 py-12">
       <div className="content-card w-full max-w-md space-y-6">
         <div className="text-center">
+          <img src={logoImg} alt="NextGen Logo" className="w-14 h-14 mx-auto mb-3 object-contain" />
           <h2 className="text-2xl font-medium tracking-tight text-[var(--text-primary)]">
             Sign In
           </h2>

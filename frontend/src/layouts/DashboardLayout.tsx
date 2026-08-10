@@ -24,6 +24,8 @@ import api from '../utils/api';
 import { NotificationDropdown } from '../components/NotificationDropdown';
 import { GlobalSearchModal } from '../components/GlobalSearchModal';
 
+import logoImg from '../assets/logo.png';
+
 export const DashboardLayout: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,6 +40,9 @@ export const DashboardLayout: React.FC = () => {
       navigate('/login');
     }
   };
+
+  const isAdmin = user?.role === 'ADMIN';
+  const canSee = (roles: string[]) => !!user?.role && roles.includes(user.role);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -58,24 +63,30 @@ export const DashboardLayout: React.FC = () => {
       if (isInput) return;
 
       const key = e.key.toLowerCase();
-      if (key === 'n') {
+      if (key === 'd') {
         e.preventDefault();
-        navigate('/dashboard/customers/new');
+        navigate('/dashboard');
+      } else if (key === 'c' && canSee(['ADMIN', 'SALES', 'ACCOUNTS'])) {
+        e.preventDefault();
+        navigate('/dashboard/customers');
       } else if (key === 'p') {
         e.preventDefault();
-        navigate('/dashboard/products/new');
-      } else if (key === 'c') {
+        navigate('/dashboard/products');
+      } else if (key === 'i' && canSee(['ADMIN', 'WAREHOUSE', 'ACCOUNTS'])) {
         e.preventDefault();
-        navigate('/dashboard/sales-challans/new');
+        navigate('/dashboard/inventory');
+      } else if (key === 's') {
+        e.preventDefault();
+        navigate('/dashboard/sales-challans');
+      } else if (key === 'n') {
+        e.preventDefault();
+        navigate('/dashboard/notifications');
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [navigate]);
-
-  const isAdmin = user?.role === 'ADMIN';
-  const canSee = (roles: string[]) => !!user?.role && roles.includes(user.role);
 
   return (
     <div className="flex min-h-screen bg-[var(--surface-page)]">
@@ -86,7 +97,7 @@ export const DashboardLayout: React.FC = () => {
       <aside className="sidebar w-64 fixed top-0 left-0 bottom-0 p-3 flex flex-col z-35 bg-[var(--surface-card)] border-r border-[var(--border)] overflow-hidden">
         <div className="px-3 py-3 shrink-0">
           <h1 className="text-xl font-medium tracking-tight text-[var(--teal-text-strong)] flex items-center gap-2">
-            <LayoutDashboard className="w-5 h-5 text-teal-600" /> NextGen ERP
+            <img src={logoImg} alt="Logo" className="w-7 h-7 object-contain" /> NextGen ERP
           </h1>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5 font-medium">Core Enterprise Workspace</p>
         </div>

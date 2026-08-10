@@ -17,6 +17,8 @@ import {
   Building2
 } from 'lucide-react';
 
+import logoImg from '../assets/logo.png';
+
 const LandingPage: React.FC = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,9 +30,7 @@ const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#085041] to-[#5DCAA5] flex items-center justify-center text-white shadow-md shadow-[#085041]/20">
-              <Layers className="w-5 h-5" />
-            </div>
+            <img src={logoImg} alt="NextGen Logo" className="w-10 h-10 object-contain rounded-xl shadow-sm" />
             <div className="flex flex-col">
               <span className="font-semibold text-lg tracking-tight text-[#1a1a18] leading-tight">
                 NextGen <span className="text-[#085041]">ERP & CRM</span>

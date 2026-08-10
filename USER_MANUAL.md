@@ -529,24 +529,19 @@ VITE_API_URL=http://localhost:5000/crm/v1
 
 ## 19. PRODUCTION DEPLOYMENT GUIDE
 
-### Production URLs:
-- **Frontend SPA**: `https://crm.yatneshpuranik.online`
-- **Backend API**: `https://api.yatneshpuranik.online`
-- **Swagger Docs**: `https://api.yatneshpuranik.online/crm/api`
-
-### Backend Deployment (Render):
+### Backend Deployment (Render / Railway / Heroku):
 1. Connect GitHub repository `yatneshpuranik/NextGen-CRM`.
 2. Set root directory to `backend`.
-3. Set Build Command: `npm ci && npm run build && npx prisma generate`.
-4. Set Start Command: `node dist/server.js`.
-5. Configure Environment Variables (`DATABASE_URL`, `JWT_SECRET`, `CLOUDINARY_*`, `SMTP_*`, `API_BASE_URL=https://api.yatneshpuranik.online`, `CLIENT_URL=https://crm.yatneshpuranik.online`).
+3. Set Build Command: `npm install && npm run build`.
+4. Set Start Command: `npm run start`.
+5. Configure Environment Variables (`DATABASE_URL`, `JWT_SECRET`, `CLOUDINARY_*`, `SMTP_*`).
 
-### Frontend Deployment (Vercel):
+### Frontend Deployment (Vercel / Netlify):
 1. Connect GitHub repository `yatneshpuranik/NextGen-CRM`.
 2. Set root directory to `frontend`.
 3. Set Build Command: `npm run build`.
 4. Set Output Directory: `dist`.
-5. Set Environment Variable: `VITE_API_URL=https://api.yatneshpuranik.online`.
+5. Set Environment Variable: `VITE_API_URL=https://your-backend-render-url.onrender.com/crm/v1`.
 
 ---
 

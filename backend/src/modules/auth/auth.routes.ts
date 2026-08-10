@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AuthController } from './auth.controller';
 import { authenticateJWT } from '../../middleware/auth.middleware';
+import { authorizeRoles } from '../../middleware/role.middleware';
 import { validateRequest } from '../../middleware/validate.middleware';
 import { registerValidator, loginValidator, changePasswordValidator } from './auth.validator';
 
@@ -117,6 +118,8 @@ const controller = new AuthController();
 
 router.post(
   '/register',
+  authenticateJWT,
+  authorizeRoles('ADMIN'),
   registerValidator,
   validateRequest,
   controller.register

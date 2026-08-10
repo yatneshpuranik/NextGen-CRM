@@ -14,6 +14,7 @@ import {
   DatabaseBackup,
   Settings,
   Mail,
+  UserPlus,
   LogOut,
   Search
 } from 'lucide-react';
@@ -174,6 +175,12 @@ export const DashboardLayout: React.FC = () => {
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
                 <Mail className="w-4.5 h-4.5" /> Email Logs
+              </NavLink>
+              <NavLink
+                to="/dashboard/register-user"
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+              >
+                <UserPlus className="w-4.5 h-4.5" /> Register User
               </NavLink>
             </div>
           )}

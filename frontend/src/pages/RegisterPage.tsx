@@ -59,13 +59,15 @@ export const RegisterPage: React.FC = () => {
       });
 
       setToast({
-        message: 'Account registered successfully! Redirecting to login...',
+        message: `Account for ${fullName} (${role}) registered successfully!`,
         type: 'success',
       });
 
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      setFullName('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+      setRole('SALES');
     } catch (err: any) {
       const responseData = err.response?.data;
       if (responseData && responseData.errors) {

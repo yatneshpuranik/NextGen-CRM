@@ -186,7 +186,7 @@ router.get(
  */
 router.get(
   '/customers',
-  authorizeRoles('ADMIN', 'SALES'),
+  authorizeRoles('ADMIN', 'SALES', 'ACCOUNTS'),
   controller.getCustomerReport
 );
 

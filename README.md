@@ -4,7 +4,7 @@
 [![API Status](https://img.shields.io/badge/API-Online-085041?style=for-the-badge)](https://api.yatneshpuranik.online)
 [![Swagger Docs](https://img.shields.io/badge/Swagger-API%20Docs-blue?style=for-the-badge)](https://api.yatneshpuranik.online/crm/api)
 
-A unified, high-performance **Enterprise Sales, Multi-Warehouse Inventory & Customer Relationship Management (CRM) Platform**. Engineered with Node.js, Express, Prisma ORM, Neon PostgreSQL, React (TypeScript), and TailwindCSS.
+A unified, high-performance **Enterprise Sales, Multi-Warehouse Inventory & Customer Relationship Management (CRM) Platform**. Engineered with Node.js, Express, Prisma ORM, Neon PostgreSQL, React 18 (TypeScript), and TailwindCSS.
 
 ---
 
@@ -14,7 +14,16 @@ A unified, high-performance **Enterprise Sales, Multi-Warehouse Inventory & Cust
 | :--- | :--- | :--- |
 | **Frontend Application** | [`https://crm.yatneshpuranik.online`](https://crm.yatneshpuranik.online) | High-speed Single Page App hosted on Vercel |
 | **Backend REST API** | [`https://api.yatneshpuranik.online`](https://api.yatneshpuranik.online) | Enterprise Express REST API hosted on Render PaaS |
-| **Swagger OpenAPI Specs** | [`https://api.yatneshpuranik.online/crm/api`](https://api.yatneshpuranik.online/crm/api) | Interactive OpenAPI 3.0.0 API documentation |
+| **Swagger API Docs** | [`https://api.yatneshpuranik.online/crm/api`](https://api.yatneshpuranik.online/crm/api) | Interactive OpenAPI 3.0.0 API documentation |
+
+---
+
+## 📖 Technical Documentation Index
+
+1. **[README.md](file:///d:/CRM/README.md)** (This Document) - All-in-one setup guide, local execution instructions, deployment manual, environment variables, test credentials, and architecture overview.
+2. **[USER_MANUAL.md](file:///d:/CRM/USER_MANUAL.md)** - Comprehensive user operations manual covering CRM workflows, inventory movements, challan lifecycles, and system admin tasks.
+3. **[PROJECT_ARCHITECTURE.md](file:///d:/CRM/PROJECT_ARCHITECTURE.md)** - Technical specifications, database ERD diagrams, Prisma schemas, request lifecycles, and Redux Toolkit state slices.
+4. **[YATNESH_ENHANCEMENTS.md](file:///d:/CRM/YATNESH_ENHANCEMENTS.md)** - Custom enterprise extensions (Swagger OpenAPI, Cloudinary, Winston, PDFKit, Helmet, Rate Limiter).
 
 ---
 
@@ -30,44 +39,18 @@ graph TD
     Render -->|Transactional Mail| SMTP[Gmail SMTP Gateway]
 ```
 
-### Infrastructure Partners
-- **DNS & Custom Domains:** BigRock DNS (`yatneshpuranik.online`)
-- **Backend Application:** Containerized Node.js runtime on [Render](https://render.com)
-- **Frontend SPA Client:** Pre-compiled static React build on [Vercel](https://vercel.com)
-- **Database Engine:** PostgreSQL Serverless cluster on [Neon DB](https://neon.tech)
-- **Asset Storage:** [Cloudinary CDN](https://cloudinary.com) for product images and uploads
-
 ---
 
-## 🚀 Key Modules & Capabilities
+## 🔑 Default Test Credentials (RBAC)
 
-1. **360° Customer Relationship Management (CRM)**
-   - Account lifecycle tracking (Leads, Retail, Wholesale, Distributors).
-   - Complete contact history, GST numbers, and purchasing profiles.
+The system automatically initializes test accounts across all system roles:
 
-2. **Multi-Warehouse Stock & Inventory Control**
-   - Physical warehouse location mapping & inter-warehouse stock transfers.
-   - Real-time stock balancing, automated low-stock warnings, and batch tracking.
-
-3. **Sales Delivery Challans & Invoicing**
-   - Full delivery challan lifecycle (`DRAFT` → `CONFIRMED` → `COMPLETED` → `CANCELLED`).
-   - Server-side automated PDF generation for delivery challans & tax invoices.
-   - Automatic stock deduction upon challan confirmation.
-
-4. **System Audit Trails & Security Compliance**
-   - Immutable audit logs capturing every user activity, transaction mutation, and setting update.
-   - IP address logging and timestamped record history.
-
-5. **Intelligent Email Delivery & Notification Logs**
-   - Automated emails for order dispatches, stock alerts, and security alerts.
-   - In-app notification bell with real-time unread badges and dispatch logs.
-
-6. **Database Backup & One-Click Restore**
-   - Automated JSON snapshot creation and full database restoration capabilities.
-   - CSV export utilities for accounts, inventory, and sales records.
-
-7. **Granular Role-Based Access Control (RBAC)**
-   - Pre-configured roles: `ADMIN`, `SALES`, `WAREHOUSE`, `ACCOUNTS`.
+| Role | Email | Password | Scope of Access |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `nextgen@admin.com` | `112233nextgen` | Full system control, user management, audit trails, database backup & restore. |
+| **Sales** | `nextgen@sales.com` | `12345678` | Customer CRM management, sales delivery challan creation, view inventory catalog. |
+| **Warehouse** | `nextgen@warehouse.com` | `12345678` | Product catalog management, stock allocations, inter-warehouse stock transfers. |
+| **Accounts** | `nextgen@accounts.com` | `12345678` | Financial ledger overview, invoice PDF downloads, sales analytics reports. |
 
 ---
 
@@ -77,25 +60,25 @@ graph TD
 - **Runtime:** Node.js (v18+ LTS) with TypeScript
 - **Framework:** Express.js
 - **Database ORM:** Prisma ORM
-- **Database Engine:** Neon PostgreSQL Serverless
-- **Auth & Security:** JWT (JSON Web Tokens), bcryptjs, Helmet, Express Rate Limit
-- **API Specs:** Swagger (`swagger-jsdoc` + `swagger-ui-express`)
+- **Primary Database:** Neon Serverless PostgreSQL
+- **Security:** JWT (JSON Web Tokens), bcryptjs, Helmet, Express Rate Limit
+- **API Sandbox Docs:** Swagger (`swagger-jsdoc` + `swagger-ui-express`)
 - **PDF Engine:** PDFKit server-side generator
 - **Mail Gateway:** Nodemailer with SMTP transport
 
 ### Frontend Client
-- **Framework:** React 18 with Vite
+- **Framework:** React 18 (Vite bundler)
 - **Language:** TypeScript
 - **State Management:** Redux Toolkit & React-Redux
-- **Routing:** React Router Dom v6
+- **Routing:** React Router Dom v6 (Protected routes & RBAC guards)
 - **Styling:** Custom Design Tokens + TailwindCSS
 - **Icons:** Lucide React
 
 ---
 
-## ⚙️ Environment Variables
+## ⚙️ Environment Variables Reference
 
-### Backend (`backend/.env`)
+### Backend Configuration (`backend/.env`)
 
 ```env
 PORT=5000
@@ -103,28 +86,28 @@ NODE_ENV=production
 API_BASE_URL=https://api.yatneshpuranik.online
 CLIENT_URL=https://crm.yatneshpuranik.online
 
-# Database Connections (Neon PostgreSQL)
-DATABASE_URL="postgresql://user:password@ep-host-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
-DIRECT_URL="postgresql://user:password@ep-host.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+# Database Connection Strings (Neon Serverless PostgreSQL)
+DATABASE_URL="postgresql://your_db_user:your_db_password@your_db_host:5432/your_db_name?sslmode=require"
+DIRECT_URL="postgresql://your_db_user:your_db_password@your_db_host:5432/your_db_name?sslmode=require"
 
-# JWT Authentication
-JWT_SECRET=your_production_jwt_secret_key
+# JWT Authentication Keys
+JWT_SECRET="your_production_jwt_signing_key"
 JWT_EXPIRES_IN=72h
 
-# Cloudinary Setup
+# Cloudinary Storage Configuration
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
-# SMTP Email Setup
+# Gmail SMTP Mailer Credentials
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USER=yatneshpuranik@gmail.com
+SMTP_USER=your_email@gmail.com
 SMTP_PASS=your_app_password
-EMAIL_FROM="NextGen ERP <yatneshpuranik@gmail.com>"
+EMAIL_FROM="NextGen ERP <your_email@gmail.com>"
 ```
 
-### Frontend (`frontend/.env`)
+### Frontend Configuration (`frontend/.env`)
 
 ```env
 VITE_API_URL=https://api.yatneshpuranik.online
@@ -132,33 +115,76 @@ VITE_API_URL=https://api.yatneshpuranik.online
 
 ---
 
-## 💻 Local Development Setup
+## 💻 Local Setup Guide
 
-### 1. Backend Service
+### 1. Prerequisites
+- Node.js (v18+) & npm (v9+)
+- Git & Docker (Optional)
+
+### 2. Backend Installation & Server Run
 ```bash
 cd backend
+
+# Install dependencies
 npm install
 
-# Run database migrations
+# Push database schema to PostgreSQL
 npx prisma db push
 
-# Populate seed data
-npm run seed
+# Generate Prisma Client
+npx prisma generate
 
-# Start development server
+# Start Express server (auto-seeds default accounts)
 npm run dev
 ```
-Backend active at `http://localhost:5000` | Swagger UI at `http://localhost:5000/crm/api`.
+- Backend REST API: `http://localhost:5000`
+- Swagger Docs Sandbox: `http://localhost:5000/crm/api`
 
-### 2. Frontend Application
+### 3. Frontend Installation & Client Run
 ```bash
 cd ../frontend
+
+# Install dependencies
 npm install
 
-# Start Vite client
+# Start Vite React dev server
 npm run dev
 ```
-Client active at `http://localhost:5173`.
+- Frontend SPA Application: `http://localhost:5173`
+
+### 4. Running with Docker Compose (Alternative)
+```bash
+# Launch multi-container environment
+docker compose up --build -d
+
+# Sync Prisma database schema inside backend container
+docker compose exec backend npx prisma db push
+```
+
+---
+
+## ☁️ Production Deployment Guide
+
+### 1. Domain & DNS Setup (BigRock)
+1. Log into **BigRock Control Panel** for `yatneshpuranik.online`.
+2. Configure **CNAME Record**: Host `crm` ➔ `cname.vercel-dns.com`.
+3. Configure **CNAME Record**: Host `api` ➔ `nextgen-crm-backend.onrender.com`.
+
+### 2. Backend Web Service (Render)
+1. Connect GitHub repository `yatneshpuranik/NextGen-CRM` on [Render](https://dashboard.render.com/).
+2. Subfolder: `backend`.
+3. Build Command: `npm ci && npm run build && npx prisma generate`.
+4. Start Command: `node dist/server.js`.
+5. Add Custom Domain: `api.yatneshpuranik.online`.
+6. Add environment variables listed in backend `.env` reference above.
+
+### 3. Frontend SPA Client (Vercel)
+1. Connect repository on [Vercel](https://vercel.com/).
+2. Subfolder: `frontend`.
+3. Framework Preset: `Vite`.
+4. Build Command: `npm run build` | Output Directory: `dist`.
+5. Environment Variable: `VITE_API_URL=https://api.yatneshpuranik.online`.
+6. Add Custom Domain: `crm.yatneshpuranik.online`.
 
 ---
 
@@ -180,4 +206,4 @@ Client active at `http://localhost:5173`.
 
 ## 📄 License & Ownership
 
-Designed and developed for enterprise operations by **Yatnesh Puranik**. All rights reserved.
+Designed and engineered for enterprise operations by **Yatnesh Puranik**. All rights reserved.

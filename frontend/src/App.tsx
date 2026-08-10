@@ -59,7 +59,13 @@ function App() {
         />
         <Route
           path="/register"
-          element={<RegisterPage />}
+          element={
+            <ProtectedRoute>
+              <RoleGuard allowedRoles={['ADMIN']}>
+                <RegisterPage />
+              </RoleGuard>
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/unauthorized"
@@ -107,6 +113,7 @@ function App() {
           <Route path="audit-logs" element={<RoleGuard allowedRoles={['ADMIN']}><AuditLogsPage /></RoleGuard>} />
           <Route path="backup-restore" element={<RoleGuard allowedRoles={['ADMIN']}><BackupRestorePage /></RoleGuard>} />
           <Route path="settings" element={<RoleGuard allowedRoles={['ADMIN']}><SettingsPage /></RoleGuard>} />
+          <Route path="register-user" element={<RoleGuard allowedRoles={['ADMIN']}><RegisterPage /></RoleGuard>} />
 
           {/* Warehouse Module Routes */}
           <Route path="warehouses" element={<RoleGuard allowedRoles={['ADMIN','WAREHOUSE']}><WarehouseListPage /></RoleGuard>} />

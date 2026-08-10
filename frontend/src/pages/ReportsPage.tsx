@@ -59,9 +59,9 @@ export const ReportsPage: React.FC = () => {
   const isAuthorized = (type: string) => {
     const role = user?.role;
     if (role === 'ADMIN') return true;
-    if (role === 'SALES') return ['sales', 'customers', 'challans'].includes(type);
-    if (role === 'WAREHOUSE') return ['inventory', 'products', 'stock-movements'].includes(type);
-    if (role === 'ACCOUNTS') return ['sales', 'inventory', 'customers', 'products', 'challans'].includes(type);
+    if (role === 'SALES') return ['sales', 'products', 'customers', 'challans'].includes(type);
+    if (role === 'WAREHOUSE') return ['inventory', 'products', 'stock-movements', 'challans'].includes(type);
+    if (role === 'ACCOUNTS') return ['sales', 'inventory', 'customers', 'challans'].includes(type);
     return false;
   };
 
@@ -165,7 +165,7 @@ export const ReportsPage: React.FC = () => {
             <button
               onClick={() => {
                 const token = localStorage.getItem('token') || '';
-                const apiUrl = import.meta.env.VITE_API_URL || 'https://api.yatneshpuranik.online';
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/crm/v1';
                 window.open(`${apiUrl}/pdf/report/inventory?token=${token}`, '_blank');
               }}
               disabled={!hasData}

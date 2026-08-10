@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PdfController } from './pdf.controller';
 import { authenticateJWT } from '../../middleware/auth.middleware';
+import { authorizeRoles } from '../../middleware/role.middleware';
 
 const router = Router();
 const controller = new PdfController();
@@ -28,7 +29,7 @@ router.use(authenticateJWT);
  *       200:
  *         description: PDF file binary stream returned.
  */
-router.get('/challan/:id', controller.getChallanPDF);
+router.get('/challan/:id', authorizeRoles('ADMIN', 'SALES', 'WAREHOUSE', 'ACCOUNTS'), controller.getChallanPDF);
 
 /**
  * @openapi
@@ -50,7 +51,7 @@ router.get('/challan/:id', controller.getChallanPDF);
  *       200:
  *         description: PDF invoice file binary stream returned.
  */
-router.get('/invoice/:id', controller.getInvoicePDF);
+router.get('/invoice/:id', authorizeRoles('ADMIN', 'SALES', 'WAREHOUSE', 'ACCOUNTS'), controller.getInvoicePDF);
 
 /**
  * @openapi
@@ -72,7 +73,7 @@ router.get('/invoice/:id', controller.getInvoicePDF);
  *       200:
  *         description: PDF file binary stream returned.
  */
-router.get('/customer/:id', controller.getCustomerPDF);
+router.get('/customer/:id', authorizeRoles('ADMIN', 'SALES', 'ACCOUNTS'), controller.getCustomerPDF);
 
 /**
  * @openapi
@@ -88,6 +89,6 @@ router.get('/customer/:id', controller.getCustomerPDF);
  *       200:
  *         description: PDF file binary stream returned.
  */
-router.get('/report/inventory', controller.getInventoryPDF);
+router.get('/report/inventory', authorizeRoles('ADMIN', 'WAREHOUSE', 'ACCOUNTS'), controller.getInventoryPDF);
 
 export default router;

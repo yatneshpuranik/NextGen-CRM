@@ -95,7 +95,7 @@ export class InventoryService {
     await this.ensureAllInventoriesExist();
 
     const page = parseInt(query.page || '1', 10);
-    const limit = parseInt(query.limit || '10', 10);
+    const limit = parseInt(query.limit || '8', 10);
     const skip = (page - 1) * limit;
 
     const search = query.search || '';
@@ -694,7 +694,7 @@ export class InventoryService {
     };
   }> {
     const page = parseInt(query.page || '1', 10);
-    const limit = parseInt(query.limit || '10', 10);
+    const limit = parseInt(query.limit || '8', 10);
     const skip = (page - 1) * limit;
 
     const { productId, transactionType, startDate, endDate } = query;

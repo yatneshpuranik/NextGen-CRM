@@ -2,11 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
-  fetchSummary, 
-  fetchSalesOverview, 
-  fetchRecentActivity, 
-  fetchTopProducts, 
-  fetchLowStock 
+  fetchRoleDashboard
 } from '../store/slices/dashboardSlice';
 import type { RootState } from '../store';
 import api from '../utils/api';
@@ -59,16 +55,8 @@ export const DashboardPage: React.FC = () => {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   useEffect(() => {
-    dispatch(fetchSummary() as any);
-    dispatch(fetchRecentActivity() as any);
-
-    const role = user?.role;
-    if (role === 'ADMIN' || role === 'SALES' || role === 'ACCOUNTS') {
-      dispatch(fetchSalesOverview() as any);
-      dispatch(fetchTopProducts() as any);
-    }
-    if (role === 'ADMIN' || role === 'WAREHOUSE') {
-      dispatch(fetchLowStock() as any);
+    if (user?.role) {
+      dispatch(fetchRoleDashboard(user.role) as any);
     }
   }, [dispatch, user?.role]);
 

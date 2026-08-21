@@ -598,7 +598,7 @@ export class SalesChallanService {
     };
   }> {
     const page = parseInt(query.page || '1', 10);
-    const limit = parseInt(query.limit || '10', 10);
+    const limit = parseInt(query.limit || '8', 10);
     const skip = (page - 1) * limit;
 
     const { search, status, customerId, startDate, endDate, sortBy, sortOrder } = query;

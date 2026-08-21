@@ -449,4 +449,282 @@ export class DashboardService {
       take: 10
     });
   }
+
+  /**
+   * Consolidated role-specific dashboard for ADMIN
+   */
+  public async getAdminDashboardData(): Promise<any> {
+    const [summary, salesOverview, topProducts, lowStock, recentActivity] = await Promise.all([
+      this.getSummary(),
+      this.getSalesOverview(),
+      this.getTopProducts(),
+      this.getLowStockList(),
+      this.getRecentActivity()
+    ]);
+
+    return {
+      role: 'ADMIN',
+      summary,
+      salesOverview,
+      topProducts,
+      lowStock,
+      recentActivity
+    };
+  }
+
+  /**
+   * Consolidated role-specific dashboard for SALES
+   */
+  public async getSalesDashboardData(): Promise<any> {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+
+    const [
+      totalCustomers,
+      challansCount,
+      completedChallans,
+      confirmedChallans,
+      draftChallans,
+      todayChallans,
+      monthChallans,
+      salesOverview,
+      topProducts,
+      recentCustomers,
+      recentChallans
+    ] = await Promise.all([
+      prisma.customer.count({ where: { isDeleted: false } }),
+      prisma.salesChallan.count(),
+      prisma.salesChallan.count({ where: { status: ChallanStatus.COMPLETED } }),
+      prisma.salesChallan.count({ where: { status: ChallanStatus.CONFIRMED } }),
+      prisma.salesChallan.count({ where: { status: ChallanStatus.DRAFT } }),
+      prisma.salesChallan.findMany({
+        where: {
+          status: { in: [ChallanStatus.CONFIRMED, ChallanStatus.COMPLETED] },
+          createdAt: { gte: todayStart }
+        },
+        select: { totalAmount: true }
+      }),
+      prisma.salesChallan.findMany({
+        where: {
+          status: { in: [ChallanStatus.CONFIRMED, ChallanStatus.COMPLETED] },
+          createdAt: { gte: monthStart }
+        },
+        select: { totalAmount: true }
+      }),
+      this.getSalesOverview(),
+      this.getTopProducts(),
+      prisma.customer.findMany({
+        where: { isDeleted: false },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        select: { id: true, companyName: true, createdAt: true }
+      }),
+      prisma.salesChallan.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        include: {
+          customer: { select: { companyName: true } }
+        }
+      })
+    ]);
+
+    const todayRevenue = todayChallans.reduce((acc, ch) => acc + Number(ch.totalAmount), 0);
+    const monthlyRevenue = monthChallans.reduce((acc, ch) => acc + Number(ch.totalAmount), 0);
+
+    const recentActivity: any[] = [];
+    recentCustomers.forEach(c => {
+      recentActivity.push({
+        type: 'CUSTOMER',
+        description: `New customer profile registered: ${c.companyName}`,
+        timestamp: c.createdAt
+      });
+    });
+    recentChallans.forEach(ch => {
+      recentActivity.push({
+        type: 'CHALLAN',
+        description: `Delivery challan raised for ${ch.customer?.companyName} (${ch.challanNumber}). Status: ${ch.status}`,
+        timestamp: ch.createdAt
+      });
+    });
+
+    recentActivity.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    return {
+      role: 'SALES',
+      summary: {
+        totalCustomers,
+        totalSalesChallans: challansCount,
+        completedChallans,
+        pendingChallans: confirmedChallans,
+        draftChallans,
+        todayRevenue,
+        monthlyRevenue
+      },
+      salesOverview,
+      topProducts,
+      recentActivity: recentActivity.slice(0, 10)
+    };
+  }
+
+  /**
+   * Consolidated role-specific dashboard for WAREHOUSE
+   */
+  public async getWarehouseDashboardData(): Promise<any> {
+    const [
+      totalProducts,
+      lowStockProducts,
+      outOfStockProducts,
+      lowStockList,
+      inventoryOverview,
+      recentTransactions,
+      recentProductEdits
+    ] = await Promise.all([
+      prisma.product.count({ where: { isDeleted: false } }),
+      prisma.product.count({
+        where: {
+          isDeleted: false,
+          isActive: true,
+          currentStock: { lte: prisma.product.fields.minimumStock }
+        }
+      }),
+      prisma.product.count({
+        where: {
+          isDeleted: false,
+          isActive: true,
+          currentStock: 0
+        }
+      }),
+      this.getLowStockList(),
+      this.getInventoryOverview(),
+      prisma.stockTransaction.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        include: {
+          product: { select: { productName: true } }
+        }
+      }),
+      prisma.product.findMany({
+        where: { isDeleted: false },
+        orderBy: { updatedAt: 'desc' },
+        take: 5,
+        select: { id: true, productName: true, updatedAt: true }
+      })
+    ]);
+
+    const recentActivity: any[] = [];
+    recentTransactions.forEach(t => {
+      recentActivity.push({
+        type: 'STOCK',
+        description: `Stock transaction logged: ${t.transactionType} for product ${t.product?.productName} (Qty: ${t.quantity})`,
+        timestamp: t.createdAt
+      });
+    });
+    recentProductEdits.forEach(p => {
+      recentActivity.push({
+        type: 'PRODUCT',
+        description: `Product details updated: ${p.productName}`,
+        timestamp: p.updatedAt
+      });
+    });
+
+    recentActivity.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    return {
+      role: 'WAREHOUSE',
+      summary: {
+        totalProducts,
+        lowStockProducts,
+        outOfStockProducts
+      },
+      inventoryOverview,
+      lowStock: lowStockList,
+      recentActivity: recentActivity.slice(0, 10)
+    };
+  }
+
+  /**
+   * Consolidated role-specific dashboard for ACCOUNTS
+   */
+  public async getAccountsDashboardData(): Promise<any> {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+
+    const [
+      challansCount,
+      completedChallans,
+      confirmedChallans,
+      draftChallans,
+      cancelledChallans,
+      todayChallans,
+      monthChallans,
+      salesOverview,
+      topProducts,
+      recentChallans
+    ] = await Promise.all([
+      prisma.salesChallan.count(),
+      prisma.salesChallan.count({ where: { status: ChallanStatus.COMPLETED } }),
+      prisma.salesChallan.count({ where: { status: ChallanStatus.CONFIRMED } }),
+      prisma.salesChallan.count({ where: { status: ChallanStatus.DRAFT } }),
+      prisma.salesChallan.count({ where: { status: ChallanStatus.CANCELLED } }),
+      prisma.salesChallan.findMany({
+        where: {
+          status: { in: [ChallanStatus.CONFIRMED, ChallanStatus.COMPLETED] },
+          createdAt: { gte: todayStart }
+        },
+        select: { totalAmount: true }
+      }),
+      prisma.salesChallan.findMany({
+        where: {
+          status: { in: [ChallanStatus.CONFIRMED, ChallanStatus.COMPLETED] },
+          createdAt: { gte: monthStart }
+        },
+        select: { totalAmount: true }
+      }),
+      this.getSalesOverview(),
+      this.getTopProducts(),
+      prisma.salesChallan.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        include: {
+          customer: { select: { companyName: true } }
+        }
+      })
+    ]);
+
+    const todayRevenue = todayChallans.reduce((acc, ch) => acc + Number(ch.totalAmount), 0);
+    const monthlyRevenue = monthChallans.reduce((acc, ch) => acc + Number(ch.totalAmount), 0);
+
+    const recentActivity: any[] = [];
+    recentChallans.forEach(ch => {
+      recentActivity.push({
+        type: 'CHALLAN',
+        description: `Delivery challan raised for ${ch.customer?.companyName} (${ch.challanNumber}). Status: ${ch.status}`,
+        timestamp: ch.createdAt
+      });
+    });
+
+    return {
+      role: 'ACCOUNTS',
+      summary: {
+        totalSalesChallans: challansCount,
+        completedChallans,
+        pendingChallans: confirmedChallans,
+        draftChallans,
+        cancelledChallans,
+        todayRevenue,
+        monthlyRevenue
+      },
+      salesOverview,
+      topProducts,
+      recentActivity
+    };
+  }
 }

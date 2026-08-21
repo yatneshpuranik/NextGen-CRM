@@ -70,7 +70,7 @@ export class WarehouseService {
    */
   public async listWarehouses(filters: WarehouseQueryFilters) {
     const page = Number(filters.page) || 1;
-    const limit = Number(filters.limit) || 10;
+    const limit = Number(filters.limit) || 8;
     const skip = (page - 1) * limit;
 
     const whereClause: any = {};
@@ -141,7 +141,7 @@ export class WarehouseService {
   /**
    * Get Warehouse Inventory Transaction History list
    */
-  public async getWarehouseHistory(warehouseId: string, pageNum: number = 1, limitNum: number = 10) {
+  public async getWarehouseHistory(warehouseId: string, pageNum: number = 1, limitNum: number = 8) {
     const skip = (pageNum - 1) * limitNum;
 
     const [transactions, total] = await Promise.all([

@@ -123,6 +123,7 @@ export const createWarehouse = createAsyncThunk(
   async (payload: any, { rejectWithValue }) => {
     try {
       const res = await api.post('/warehouses', payload);
+      queryCache.invalidate('warehouses');
       return res.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to create warehouse');
@@ -135,6 +136,7 @@ export const updateWarehouse = createAsyncThunk(
   async ({ id, payload }: { id: string; payload: any }, { rejectWithValue }) => {
     try {
       const res = await api.put(`/warehouses/${id}`, payload);
+      queryCache.invalidate('warehouses');
       return res.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to update warehouse');
@@ -147,6 +149,8 @@ export const transferStock = createAsyncThunk(
   async (payload: StockTransferPayload, { rejectWithValue }) => {
     try {
       const res = await api.post('/warehouses/transfer', payload);
+      queryCache.invalidate('warehouses');
+      queryCache.invalidate('inventory');
       return res.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to execute stock transfer');

@@ -196,6 +196,25 @@ export const fetchLowStock = createAsyncThunk(
   }
 );
 
+export const fetchRoleDashboard = createAsyncThunk(
+  'dashboard/fetchRoleDashboard',
+  async (role: string, { rejectWithValue }) => {
+    try {
+      const endpointMap: Record<string, string> = {
+        ADMIN: '/dashboard/admin',
+        SALES: '/dashboard/sales',
+        WAREHOUSE: '/dashboard/warehouse',
+        ACCOUNTS: '/dashboard/accounts',
+      };
+      const path = endpointMap[role] || '/dashboard/admin';
+      const response = await api.get(path);
+      return response.data.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || `Failed to fetch ${role} dashboard`);
+    }
+  }
+);
+
 export const fetchReport = createAsyncThunk(
   'dashboard/fetchReport',
   async ({ type, params }: { type: string; params: any }, { rejectWithValue }) => {
@@ -272,6 +291,24 @@ const dashboardSlice = createSlice({
       // Low Stock
       .addCase(fetchLowStock.fulfilled, (state, action) => {
         state.lowStock = action.payload;
+      })
+      // Role-specific consolidated dashboard
+      .addCase(fetchRoleDashboard.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchRoleDashboard.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload.summary) state.summary = action.payload.summary;
+        if (action.payload.salesOverview) state.salesOverview = action.payload.salesOverview;
+        if (action.payload.inventoryOverview) state.inventoryOverview = action.payload.inventoryOverview;
+        if (action.payload.topProducts) state.topProducts = action.payload.topProducts;
+        if (action.payload.lowStock) state.lowStock = action.payload.lowStock;
+        if (action.payload.recentActivity) state.recentActivity = action.payload.recentActivity;
+      })
+      .addCase(fetchRoleDashboard.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       })
       // Reports
       .addCase(fetchReport.pending, (state) => {

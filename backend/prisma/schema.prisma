@@ -76,7 +76,9 @@ model Customer {
   @@index([email])
   @@index([companyName])
   @@index([customerCode])
+  @@index([phone])
   @@index([isDeleted, isActive])
+  @@index([isDeleted, isActive, createdAt])
   @@index([createdAt])
 }
 
@@ -110,7 +112,9 @@ model Product {
   @@index([sku])
   @@index([productName])
   @@index([productCode])
+  @@index([brand])
   @@index([isDeleted, isActive])
+  @@index([isDeleted, isActive, category])
   @@index([category])
   @@index([createdAt])
 }
@@ -141,6 +145,7 @@ model SalesChallan {
   @@index([challanNumber])
   @@index([warehouseId])
   @@index([status])
+  @@index([status, createdAt])
   @@index([createdAt])
 }
 
@@ -222,6 +227,7 @@ model StockTransaction {
   @@index([warehouseId])
   @@index([transactionType])
   @@index([createdAt])
+  @@index([createdAt, transactionType])
 }
 
 model AuditLog {
@@ -253,6 +259,8 @@ model Notification {
 
   @@index([userId])
   @@index([isRead])
+  @@index([userId, isRead])
+  @@index([userId, type, isRead])
   @@index([createdAt])
   @@index([type])
 }

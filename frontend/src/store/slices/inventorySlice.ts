@@ -182,6 +182,7 @@ export const updateInventorySettings = createAsyncThunk(
   async ({ productId, data }: { productId: string; data: { minimumStock?: number; maximumStock?: number; reorderLevel?: number; warehouseLocation?: string } }, { rejectWithValue }) => {
     try {
       const response = await api.put(`/inventory/product/${productId}/settings`, data);
+      queryCache.invalidate('inventory');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to update settings');
@@ -194,6 +195,7 @@ export const stockIn = createAsyncThunk(
   async (data: { productId: string; quantity: number; reference?: string; remarks?: string }, { rejectWithValue }) => {
     try {
       const response = await api.post('/inventory/stock-in', data);
+      queryCache.invalidate('inventory');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to execute stock-in');
@@ -206,6 +208,7 @@ export const stockOut = createAsyncThunk(
   async (data: { productId: string; quantity: number; reference?: string; remarks?: string }, { rejectWithValue }) => {
     try {
       const response = await api.post('/inventory/stock-out', data);
+      queryCache.invalidate('inventory');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to execute stock-out');
@@ -218,6 +221,7 @@ export const adjustStock = createAsyncThunk(
   async (data: { productId: string; quantity: number; remarks?: string }, { rejectWithValue }) => {
     try {
       const response = await api.post('/inventory/adjust', data);
+      queryCache.invalidate('inventory');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to execute stock adjustment');
@@ -230,6 +234,7 @@ export const markDamage = createAsyncThunk(
   async (data: { productId: string; quantity: number; reference?: string; remarks?: string }, { rejectWithValue }) => {
     try {
       const response = await api.post('/inventory/damage', data);
+      queryCache.invalidate('inventory');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to record damage');
@@ -242,6 +247,7 @@ export const returnStock = createAsyncThunk(
   async (data: { productId: string; quantity: number; returnToType: 'AVAILABLE' | 'DAMAGED'; reference?: string; remarks?: string }, { rejectWithValue }) => {
     try {
       const response = await api.post('/inventory/return', data);
+      queryCache.invalidate('inventory');
       return response.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to execute return');

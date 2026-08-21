@@ -31,4 +31,10 @@ router.get('/recent-activity', authorizeRoles('ADMIN', 'SALES', 'WAREHOUSE', 'AC
 router.get('/top-products', authorizeRoles('ADMIN', 'SALES', 'ACCOUNTS'), controller.getTopProducts);
 router.get('/low-stock', authorizeRoles('ADMIN', 'WAREHOUSE'), controller.getLowStock);
 
+// Role-specific consolidated dashboard endpoints
+router.get('/admin', authorizeRoles('ADMIN'), controller.getAdminDashboard);
+router.get('/sales', authorizeRoles('ADMIN', 'SALES'), controller.getSalesDashboard);
+router.get('/warehouse', authorizeRoles('ADMIN', 'WAREHOUSE'), controller.getWarehouseDashboard);
+router.get('/accounts', authorizeRoles('ADMIN', 'ACCOUNTS'), controller.getAccountsDashboard);
+
 export default router;

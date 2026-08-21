@@ -71,4 +71,40 @@ export class DashboardController {
       next(error);
     }
   };
+
+  public getAdminDashboard = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.dashboardService.getAdminDashboardData();
+      sendSuccess(res, result, 200, 'Admin dashboard metrics retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getSalesDashboard = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.dashboardService.getSalesDashboardData();
+      sendSuccess(res, result, 200, 'Sales dashboard metrics retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getWarehouseDashboard = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.dashboardService.getWarehouseDashboardData();
+      sendSuccess(res, result, 200, 'Warehouse dashboard metrics retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getAccountsDashboard = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.dashboardService.getAccountsDashboardData();
+      sendSuccess(res, result, 200, 'Accounts dashboard metrics retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  };
 }
